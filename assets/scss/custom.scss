@@ -1,0 +1,673 @@
+body {
+    &::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        opacity: 0.4;
+        z-index: -1;
+        pointer-events: none;
+        transition: background-image 1s ease-in-out;
+    }
+}
+
+/* ========== 沉浸模式按钮（左下角固定）- 液态玻璃效果 ========== */
+#immersive-btn {
+    position: fixed;
+    bottom: 28px;
+    left: 28px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 16px;
+    padding: 10px 20px;
+    color: #e0e0ff;
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 500;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.3px;
+    overflow: hidden;
+}
+
+#immersive-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0) 40%,
+        rgba(255, 255, 255, 0) 60%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+#immersive-btn:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0.15) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(129, 140, 248, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+#immersive-btn:active {
+    transform: translateY(0);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+}
+
+#immersive-btn svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+#immersive-btn:hover svg {
+    transform: scale(1.1);
+}
+
+/* 沉浸模式激活时按钮高亮 */
+body.immersive-mode #immersive-btn {
+    z-index: 10000;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.12) 100%
+    );
+    border-color: rgba(129, 140, 248, 0.5);
+}
+
+/* ========== 沉浸模式：优雅隐藏/显示所有 UI ========== */
+body.immersive-mode::before {
+    opacity: 1;
+    z-index: 0;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 沉浸模式 - 隐藏所有UI */
+body.immersive-mode {
+    overflow: hidden !important;
+    height: 100vh !important;
+}
+
+body.immersive-mode .container {
+    overflow: hidden !important;
+}
+
+/* 默认状态 - 可见 */
+.left-sidebar,
+.right-sidebar,
+main.main,
+.site-footer,
+.hamburger {
+    opacity: 1;
+    pointer-events: auto;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.left-sidebar {
+    transform: translateX(0);
+}
+
+.right-sidebar {
+    transform: translateX(0);
+}
+
+main.main {
+    transform: scale(1);
+}
+
+/* 沉浸模式 - 隐藏 */
+body.immersive-mode .left-sidebar {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-40px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.immersive-mode .right-sidebar {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(40px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.immersive-mode main.main {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95);
+    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.immersive-mode .site-footer,
+body.immersive-mode .hamburger {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 沉浸模式按钮优雅动画 */
+#immersive-btn {
+    animation: btnFloatIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes btnFloatIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+body.immersive-mode #immersive-btn {
+    animation: btnPulse 2s ease-in-out infinite;
+}
+
+@keyframes btnPulse {
+    0%, 100% {
+        box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+            0 0 0 0 rgba(129, 140, 248, 0.4);
+    }
+    50% {
+        box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+            0 0 20px 4px rgba(129, 140, 248, 0.2);
+    }
+}
+
+/* ========== 全局高级 Hover 动效 ========== */
+
+/* 导航菜单项 - 液态玻璃效果 */
+.menu > li a,
+.menu-social li a {
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.menu > li > a {
+    border-radius: 12px;
+    margin: 2px 6px;
+    padding: 8px 12px !important;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.02) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.menu > li > a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) scaleX(0);
+    width: 3px;
+    height: 60%;
+    background: linear-gradient(180deg, #818cf8, #a78bfa);
+    border-radius: 0 4px 4px 0;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: left;
+}
+
+.menu > li > a:hover::before {
+    transform: translateY(-50%) scaleX(1);
+}
+
+.menu > li > a:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.05) 100%
+    ) !important;
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(4px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.menu > li > a:hover span {
+    color: #a5b4fc !important;
+}
+
+.menu > li > a:hover svg {
+    stroke: #818cf8 !important;
+    transform: scale(1.1);
+}
+
+/* 社交图标 - 液态玻璃效果 */
+.menu-social {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    padding: 0;
+    margin: 12px 0;
+}
+
+.menu-social li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.03) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.menu-social li a:hover {
+    transform: translateY(-3px) scale(1.1);
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.18) 0%,
+        rgba(255, 255, 255, 0.06) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.3),
+        0 0 15px rgba(129, 140, 248, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.menu-social li a:hover svg {
+    stroke: #a5b4fc !important;
+    filter: drop-shadow(0 0 6px rgba(129, 140, 248, 0.5));
+}
+
+/* 文章卡片 - 液态玻璃效果 */
+.article-list article {
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.02) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.article-list article:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.04) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(129, 140, 248, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.article-list article:hover .post-title {
+    color: #a5b4fc !important;
+}
+
+.article-list article:hover .article-preview img {
+    transform: scale(1.05);
+}
+
+.article-preview img {
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* 文章标题链接 */
+.post-title,
+.article-title a,
+a.title {
+    transition: color 0.25s ease, text-shadow 0.3s ease !important;
+    position: relative;
+}
+
+.post-title:hover,
+.article-title a:hover,
+a.title:hover {
+    text-shadow: 0 0 20px rgba(129, 140, 248, 0.4);
+}
+
+/* 标签/分类 - 液态玻璃效果 */
+.tags a.tag,
+.categories a.category {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-radius: 10px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.03) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px) saturate(150%);
+    -webkit-backdrop-filter: blur(8px) saturate(150%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.tags a.tag:hover,
+.categories a.category:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.18) 0%,
+        rgba(255, 255, 255, 0.06) 100%
+    ) !important;
+    color: #a5b4fc !important;
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow:
+        0 4px 12px rgba(99, 102, 241, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* 按钮通用 hover */
+button:not(#immersive-btn):not(.hamburger):not([type="submit"]) {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:not(#immersive-btn):not(.hamburger):not([type="submit"]):hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+/* 链接下划线动画 */
+.main a:not(.site-name a):not(.site-avatar a):not(.menu a):not(.menu-social a) {
+    position: relative;
+    text-decoration: none;
+}
+
+.main a:not(.site-name a):not(.site-avatar a):not(.menu a):not(.menu-social a)::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #818cf8, #a78bfa);
+    border-radius: 1px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main a:not(.site-name a):not(.site-avatar a):not(.menu a):not(.menu-social a):hover::after {
+    width: 100%;
+}
+
+/* 头像 - 液态玻璃光环效果 */
+.site-avatar {
+    position: relative;
+    display: inline-block;
+}
+
+.site-avatar::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(129, 140, 248, 0.15) 30%,
+        rgba(168, 85, 247, 0.1) 60%,
+        rgba(255, 255, 255, 0.15) 100%
+    );
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 0 30px rgba(129, 140, 248, 0.15);
+    z-index: -1;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.site-avatar:hover::before {
+    inset: -8px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(129, 140, 248, 0.25) 30%,
+        rgba(168, 85, 247, 0.18) 60%,
+        rgba(255, 255, 255, 0.22) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow:
+        0 6px 30px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 0 40px rgba(129, 140, 248, 0.25);
+}
+
+.site-avatar img {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+}
+
+.site-avatar:hover img {
+    transform: scale(1.06) rotate(2deg);
+    filter: brightness(1.08);
+}
+
+/* Widget 卡片 - 液态玻璃效果 */
+.widget-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 16px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.02) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.widget-card:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.04) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow:
+        0 8px 28px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* 右侧栏链接 - 液态玻璃效果 */
+.right-sidebar a {
+    display: block;
+    padding: 10px 14px;
+    margin: 4px 0;
+    border-radius: 16px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.02) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    color: inherit;
+    text-decoration: none;
+}
+
+.right-sidebar a:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(3px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* 右侧栏标签云 */
+.right-sidebar .tagCloud-tags a {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 3px;
+    border-radius: 16px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.03) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.right-sidebar .tagCloud-tags a:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.18) 0%,
+        rgba(255, 255, 255, 0.06) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.22);
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 14px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* 右侧栏分类 */
+.right-sidebar .category-list a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    margin: 3px 0;
+    border-radius: 16px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.02) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.right-sidebar .category-list a:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(3px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* 右侧栏归档 */
+.right-sidebar .widget-archive--list a,
+.right-sidebar .archives-year a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    margin: 3px 0;
+    border-radius: 16px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.02) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.right-sidebar .widget-archive--list a:hover,
+.right-sidebar .archives-year a:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(3px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 6px 16px rgba(0, 0, 0, 0.2);
+}

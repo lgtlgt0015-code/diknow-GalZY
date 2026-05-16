@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Locale }}" dir="{{ default `ltr` .Language.Direction }}">
+    <head>
+        {{- partial "head/head.html" . -}}
+        {{- block "head" . -}}{{ end }}
+        <script>
+            // 强制深色模式 - 在任何其他脚本之前执行
+            localStorage.setItem('StackColorScheme', 'dark');
+            document.documentElement.dataset.scheme = 'dark';
+        </script>
+        <script>
+            // 背景图轮播 - 每次刷新随机选一张
+            (function() {
+                var bgImages = [
+                    'img/bg/06a5057cb9cd50e62a8bf8db42ad6fc1.jpg',
+                    'img/bg/1a6202babb9ae9241fafd4ec2b7b8f31.jpg',
+                    'img/bg/258461257b2c6c1ea1f6a23e94e26356.jpg',
+                    'img/bg/4b379a9675c794883a2a044d61978b5b.jpg',
+                    'img/bg/6f3ee4c09371c8176a82c947f325a354.jpg',
+                    'img/bg/7cd75dbe4be2fd34355da2c1f619dafb.jpg',
+                    'img/bg/83c18e117d3bfcf9c1d91d4501db8891.jpg',
+                    'img/bg/95228a312d1d8888ed669fb16ee8ecbc.jpg',
+                    'img/bg/9c6cd2b4fe7fbf4004b21ec710d6e0a2.jpg',
+                    'img/bg/a16365435d1a31667421399ffb0c7291.jpg',
+                    'img/bg/ae9ba810177dfde6fd56fc0f50bed7a8.jpg',
+                    'img/bg/dc288b0823c0bd0a0d67c5943df3d67d.jpg',
+                    'img/bg/ddbec10336dd03703d235e1adf1b2c17.jpg',
+                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91Fate-saber.png',
+                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91jk%E5%88%B6%E6%9C%8D-%E4%BA%8C%E6%AC%A1%E5%85%83.png',
+                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E4%B8%AD%E9%87%8E%E6%A2%93-%E4%BA%8C%E6%AC%A1%E5%85%83-%E5%8A%A8%E6%BC%AB.png',
+                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E4%BA%8C%E6%AC%A1%E5%85%83-%E5%8F%AF%E7%88%B1-%E5%A5%B3%E7%94%9F.png',
+                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E4%BA%8C%E6%AC%A1%E5%85%83-%E5%9D%90%E5%A7%BF-%E5%A4%A9%E4%BD%BF.png',
+                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E4%BA%8C%E6%AC%A1%E5%85%83%E5%A5%B3%E5%AD%A9-%E5%88%9D%E9%9F%B3%E6%9C%AA%E6%9D%A5.png',
+                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E5%8A%A8%E6%BC%AB%E5%A5%B3%E5%AD%A9-%E5%9B%B4%E5%B7%BE.png',
+                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E5%AD%A4%E7%8B%AC%E6%91%87%E6%BB%9A-%E6%B3%A2%E5%A5%87%E9%85%B1.png'
+                ];
+                var idx = Math.floor(Math.random() * bgImages.length);
+                document.addEventListener('DOMContentLoaded', function() {
+                    var style = document.createElement('style');
+                    style.textContent = 'body::before{background-image:url(' + bgImages[idx] + ')}';
+                    document.head.appendChild(style);
+                });
+            })();
+        </script>
+    </head>
+    <body class="{{ block `body-class` . }}{{ end }}">
+        {{- partial "head/colorScheme" . -}}
+
+        {{/* The container is wider when there's any activated widget */}}
+        {{- $hasWidget := true -}}
+        <div class="container main-container flex on-phone--column {{ if $hasWidget }}extended{{ else }}compact{{ end }}">
+            {{- block "left-sidebar" . -}}
+                {{ partial "sidebar/left.html" . }}
+            {{- end -}}
+            {{- block "right-sidebar" . -}}{{ end }}
+            <main class="main full-width">
+                {{- block "main" . }}{{- end }}
+            </main>
+        </div>
+        {{ partial "footer/include.html" . }}
+
+        <!-- 沉浸模式按钮 -->
+        <button id="immersive-btn" aria-label="切换沉浸模式">
+            <svg class="icon-enter" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            <svg class="icon-exit" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            <span class="label-enter">沉浸</span>
+            <span class="label-exit" style="display:none;">退出沉浸</span>
+        </button>
+
+        <script>
+            (function() {
+                const btn = document.getElementById('immersive-btn');
+                if (!btn) return;
+
+                let isImmersive = false;
+
+                function updateState(immersive) {
+                    const iconEnter = btn.querySelector('.icon-enter');
+                    const iconExit = btn.querySelector('.icon-exit');
+                    const labelEnter = btn.querySelector('.label-enter');
+                    const labelExit = btn.querySelector('.label-exit');
+
+                    if (immersive) {
+                        if (iconEnter) iconEnter.style.display = 'none';
+                        if (iconExit) iconExit.style.display = '';
+                        if (labelEnter) labelEnter.style.display = 'none';
+                        if (labelExit) labelExit.style.display = '';
+                    } else {
+                        if (iconEnter) iconEnter.style.display = '';
+                        if (iconExit) iconExit.style.display = 'none';
+                        if (labelEnter) labelEnter.style.display = '';
+                        if (labelExit) labelExit.style.display = 'none';
+                    }
+                }
+
+                // ===== 沉浸模式 - 完全重写 =====
+                // 原理：创建视口大小 div，背景 contain 铺满，
+                // transform scale 真正缩放图片，translate 拖动平移
+                var panel = null;
+                var st = { x: 0, y: 0, scale: 1, vx: 0, vy: 0, ts: 1 };
+                var dr = { on: false, lx: 0, ly: 0, lt: 0 };
+                var loop = null;
+
+                function enterImmersive() {
+                    var cs = getComputedStyle(document.body, '::before');
+                    var m = cs.backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+                    if (!m) return;
+
+                    panel = document.createElement('div');
+                    panel.id = 'immersive-panel';
+                    panel.style.cssText =
+                        'position:fixed;z-index:9999;pointer-events:auto;cursor:grab;' +
+                        'width:100vw;height:100vh;top:0;left:0;' +
+                        'background-image:' + cs.backgroundImage + ';' +
+                        'background-size:contain;background-position:center;background-repeat:no-repeat;' +
+                        'opacity:0;transition:opacity 0.6s ease;will-change:transform;';
+                    document.body.appendChild(panel);
+                    var h = document.getElementById('imm-hide');
+                    if (!h) { h = document.createElement('style'); h.id = 'imm-hide'; document.head.appendChild(h); }
+                    h.textContent = 'body.immersive-mode::before{opacity:0!important}';
+                    requestAnimationFrame(function() { panel.style.opacity = '1'; });
+                    st.x = 0; st.y = 0; st.scale = 1; st.ts = 1; st.vx = 0; st.vy = 0;
+                }
+
+                function exitImmersive() {
+                    if (!panel) return;
+                    panel.style.opacity = '0';
+                    var p = panel;
+                    setTimeout(function() {
+                        p.remove();
+                        var h = document.getElementById('imm-hide');
+                        if (h) h.remove();
+                    }, 600);
+                    panel = null;
+                    st.x = 0; st.y = 0; st.scale = 1; st.ts = 1; st.vx = 0; st.vy = 0;
+                    if (loop) { cancelAnimationFrame(loop); loop = null; }
+                }
+
+                function tick() {
+                    var ds = st.ts - st.scale;
+                    if (Math.abs(ds) > 0.001) st.scale += ds * 0.12;
+                    else st.scale = st.ts;
+
+                    if (!dr.on) {
+                        st.x += st.vx;
+                        st.y += st.vy;
+                        st.vx *= 0.95;
+                        st.vy *= 0.95;
+                        if (Math.abs(st.vx) < 0.05) st.vx = 0;
+                        if (Math.abs(st.vy) < 0.05) st.vy = 0;
+                    }
+
+                    if (panel) {
+                        panel.style.transform = 'translate(' + st.x + 'px,' + st.y + 'px) scale(' + st.scale + ')';
+                    }
+
+                    var busy = Math.abs(st.vx) > 0.05 || Math.abs(st.vy) > 0.05 || Math.abs(ds) > 0.001 || dr.on;
+                    if (busy) loop = requestAnimationFrame(tick);
+                    else loop = null;
+                }
+
+                function ensureLoop() { if (!loop) loop = requestAnimationFrame(tick); }
+
+                document.addEventListener('mousedown', function(e) {
+                    if (!isImmersive || !panel) return;
+                    if (e.target.closest('#immersive-btn')) return;
+                    dr.on = true; dr.lx = e.clientX; dr.ly = e.clientY; dr.lt = performance.now();
+                    st.vx = 0; st.vy = 0;
+                    panel.style.cursor = 'grabbing';
+                    e.preventDefault();
+                    ensureLoop();
+                });
+
+                document.addEventListener('mousemove', function(e) {
+                    if (!dr.on) return;
+                    var now = performance.now(), dt = now - dr.lt;
+                    var dx = e.clientX - dr.lx, dy = e.clientY - dr.ly;
+                    if (dt > 0) {
+                        st.vx = st.vx * 0.4 + (dx / dt * 16) * 0.6;
+                        st.vy = st.vy * 0.4 + (dy / dt * 16) * 0.6;
+                    }
+                    st.x += dx; st.y += dy;
+                    dr.lx = e.clientX; dr.ly = e.clientY; dr.lt = now;
+                });
+
+                document.addEventListener('mouseup', function() {
+                    if (dr.on && panel) panel.style.cursor = 'grab';
+                    dr.on = false;
+                    st.vx *= 1.8; st.vy *= 1.8;
+                });
+
+                document.addEventListener('wheel', function(e) {
+                    if (!isImmersive || !panel) return;
+                    e.preventDefault();
+                    st.ts = Math.max(0.1, Math.min(5, st.ts + (e.deltaY > 0 ? -0.2 : 0.2)));
+                    ensureLoop();
+                }, { passive: false });
+
+                btn.addEventListener('click', function() {
+                    isImmersive = !isImmersive;
+                    document.body.classList.toggle('immersive-mode', isImmersive);
+                    updateState(isImmersive);
+                    if (isImmersive) enterImmersive();
+                    else exitImmersive();
+                });
+            })();
+        </script>
+
+        <script>
+            // 暗色模式切换
+            (function() {
+                const darkToggle = document.getElementById('dark-mode-toggle');
+                if (!darkToggle) return;
+                darkToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const current = document.documentElement.getAttribute('data-scheme');
+                    const next = current === 'dark' ? 'light' : 'dark';
+                    document.documentElement.setAttribute('data-scheme', next);
+                    localStorage.setItem('theme', next);
+                });
+            })();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,92 @@
+baseURL                = "https://galgame-re-1.pages.dev/"
+relativeURLs           = true
+canonifyURLs           = true
+locale                 = "zh-cn"
+defaultContentLanguage = "zh"
+hasCJKLanguage         = true
+title                  = "diknowのGalZY"
+theme                  = "hugo-theme-stack"
+
+mainSections           = ["post"]
+rssFullContent         = true
+
+[params]
+    favicon = "img/avatar.png"
+
+    [params.footer]
+        since = 2026
+
+    [params.dateFormat]
+        published   = ":date_full"
+        lastUpdated = ":date_full"
+
+    [params.sidebar]
+        compact  = false
+        subtitle = "GalGame 攻略 · 评测 · 资源"
+        avatar   = "/img/avatar.png"
+
+    [params.article]
+        headingAnchor = false
+        math          = false
+        toc           = true
+        readingTime   = true
+
+        [params.article.list]
+            showTags = true
+
+        [params.article.license]
+            enabled = false
+
+    [params.comments]
+        enabled = false
+
+    [params.cookies]
+        enabled = false
+
+    [params.colorScheme]
+        toggle  = true
+        default = "dark"
+
+[[params.widgets.homepage]]
+    type = "search"
+
+[[params.widgets.homepage]]
+    type = "archives"
+    [params.widgets.homepage.params]
+        limit = 5
+
+[[params.widgets.homepage]]
+    type = "categories"
+    [params.widgets.homepage.params]
+        limit = 10
+
+[[params.widgets.homepage]]
+    type = "tag-cloud"
+    [params.widgets.homepage.params]
+        limit = 15
+
+[[params.widgets.page]]
+    type = "toc"
+
+[pagination]
+    pagerSize = 10
+
+[permalinks]
+    post = "/p/:slug/"
+    page = "/:slug/"
+
+[outputs]
+    home = ["HTML", "RSS"]
+    page = ["HTML", "RSS"]
+
+[outputFormats]
+    [outputFormats.RSS]
+        mediatype = "application/rss"
+        baseName = "feed"
+
+[markup]
+    [markup.highlight]
+        noClasses = false
+    [markup.goldmark]
+        [markup.goldmark.renderer]
+            unsafe = true

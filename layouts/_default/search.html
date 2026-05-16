@@ -1,0 +1,156 @@
+{{ define "body-class" }}template-search{{ end }}
+{{ define "head" }}
+    {{- with .OutputFormats.Get "json" -}} 
+        <link rel="preload" href="{{ .RelPermalink }}" as="fetch" crossorigin="anonymous">
+    {{- end -}}
+{{ end }}
+{{ define "main" }}
+<form action="{{ .RelPermalink }}" class="search-form"{{ with .OutputFormats.Get "json" -}} data-json="{{ .RelPermalink }}"{{- end }}>
+    <p>
+        <label>{{ T "search.title" }}</label>
+        <input name="keyword" placeholder="输入关键词..." />
+    </p>
+
+    <button title="{{ T `search.title` }}">
+        {{ partial "helper/icon" "search" }}
+    </button>
+</form>
+
+<div class="search-result hidden">
+    <h3 class="search-result--title section-title"></h3>
+    <div class="search-result--list article-list--compact"></div>
+</div>
+
+<script>
+    window.searchResultTitleTemplate = "{{ T `search.resultTitle` }}"
+</script>
+
+<script>
+(function(){
+    const form = document.querySelector('.search-form');
+    const input = form ? form.querySelector('input[name="keyword"]') : null;
+    const resultContainer = document.querySelector('.search-result');
+    const resultTitle = document.querySelector('.search-result--title');
+    const resultList = document.querySelector('.search-result--list');
+    const jsonUrl = form ? form.dataset.json : null;
+    
+    if (!form || !input || !resultContainer || !resultList || !jsonUrl) {
+        console.error('Search: Missing required elements');
+        return;
+    }
+    
+    let searchData = [];
+    let dataLoaded = false;
+    
+    // 加载搜索数据
+    fetch(jsonUrl)
+        .then(r => r.json())
+        .then(items => {
+            searchData = items || [];
+            dataLoaded = true;
+            console.log('Search data loaded:', searchData.length, 'items');
+        })
+        .catch(e => {
+            console.error('Search: Failed to load data', e);
+            if (resultTitle) resultTitle.textContent = '加载搜索数据失败';
+            resultContainer.classList.remove('hidden');
+        });
+    
+    // HTML 转义
+    function esc(s) { 
+        return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); 
+    }
+    
+    // 纯关键词搜索 - 匹配标题或内容
+    function keywordSearch(keyword) {
+        const kw = keyword.toLowerCase().trim();
+        if (!kw) return [];
+        
+        const results = [];
+        for (const item of searchData) {
+            const title = (item.title || '').toLowerCase();
+            const content = (item.content || '').toLowerCase();
+            
+            // 关键词匹配：标题或内容中包含关键词
+            if (title.includes(kw) || content.includes(kw)) {
+                results.push(item);
+            }
+        }
+        return results;
+    }
+    
+    // 执行搜索
+    function doSearch(kw) {
+        const keyword = kw.trim();
+        
+        if (!keyword) {
+            resultContainer.classList.add('hidden');
+            return;
+        }
+        
+        if (!dataLoaded) {
+            if (resultTitle) resultTitle.textContent = '正在加载数据...';
+            resultContainer.classList.remove('hidden');
+            return;
+        }
+        
+        const startTime = performance.now();
+        const results = keywordSearch(keyword);
+        const endTime = performance.now();
+        
+        resultContainer.classList.remove('hidden');
+        
+        // 更新标题
+        const timeStr = ((endTime - startTime) / 1000).toFixed(3);
+        if (resultTitle) {
+            resultTitle.textContent = (window.searchResultTitleTemplate || '#PAGES_COUNT 个结果 （用时 #TIME_SECONDS 秒）')
+                .replace('#PAGES_COUNT', results.length)
+                .replace('#TIME_SECONDS', timeStr);
+        }
+        
+        // 渲染结果
+        if (results.length === 0) {
+            resultList.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--card-text-color-secondary)">未找到包含 "' + esc(keyword) + '" 的文章</p>';
+            return;
+        }
+        
+        resultList.innerHTML = results.map(item => {
+            const snippet = esc((item.content || '').substring(0, 200));
+            const dateStr = item.date ? new Date(item.date).toLocaleDateString('zh-CN') : '';
+            return '<article class="article-list--compact">' +
+                '<a href="' + item.permalink + '">' +
+                '<div class="article-details">' +
+                '<h2 class="article-title">' + esc(item.title) + '</h2>' +
+                (dateStr ? '<footer class="article-time"><time>' + dateStr + '</time></footer>' : '') +
+                '<section class="article-content">' + snippet + (snippet.length >= 200 ? '...' : '') + '</section>' +
+                '</div>' +
+                '</a>' +
+                '</article>';
+        }).join('');
+    }
+    
+    // 输入防抖
+    let t;
+    input.addEventListener('input', function() { 
+        clearTimeout(t); 
+        t = setTimeout(() => doSearch(input.value), 150); 
+    });
+    
+    // 表单提交
+    form.addEventListener('submit', function(e) { 
+        e.preventDefault(); 
+        doSearch(input.value); 
+    });
+    
+    // 如果有初始关键词，执行搜索
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialKeyword = urlParams.get('keyword');
+    if (initialKeyword) {
+        input.value = initialKeyword;
+        doSearch(initialKeyword);
+    }
+})();
+</script>
+
+{{ partialCached "footer/footer" . }}
+{{ end }}
