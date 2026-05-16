@@ -1,0 +1,22 @@
+backend:
+  name: github
+  repo: lgtlgt0015-code/diknow-GalZY
+  branch: main
+
+media_folder: "static/img/uploads"
+public_folder: "/img/uploads"
+
+collections:
+  - name: "posts"
+    label: "帖子"
+    folder: "content/post"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "标题", name: "title", widget: "string"}
+      - {label: "发布日期", name: "date", widget: "datetime", format: "2006-01-02T15:04:05Z07:00"}
+      - {label: "封面图", name: "image", widget: "image", required: false}
+      - {label: "分类", name: "categories", widget: "list", allow_add: true}
+      - {label: "标签", name: "tags", widget: "list", allow_add: true}
+      - {label: "描述", name: "description", widget: "string", required: false}
+      - {label: "正文", name: "body", widget: "markdown"}
