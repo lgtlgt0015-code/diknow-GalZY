@@ -751,3 +751,36 @@ button:not(#immersive-btn):not(.hamburger):not([type="submit"]):hover {
         inset 0 1px 0 rgba(255, 255, 255, 0.12),
         0 6px 16px rgba(0, 0, 0, 0.2);
 }
+
+/* ========== 右侧栏 widget 容器液态玻璃化 ========== */
+/* 覆盖主题 card-style 的不透明白底，让子元素的 backdrop-filter 生效 */
+.right-sidebar .widget.archives,
+.right-sidebar .widget.categories,
+.right-sidebar .widget.tagCloud,
+.right-sidebar .widget {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.02) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ========== 移动端汉堡菜单液态玻璃化 ========== */
+/* 覆盖主题 #main-menu 在移动端的 card-background 纯色背景 */
+#main-menu {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.03) 100%
+    ) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+}
