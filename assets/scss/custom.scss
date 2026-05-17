@@ -804,6 +804,15 @@ button:not(#immersive-btn):not(.hamburger):not([type="submit"]):hover {
     outline: none !important;
 }
 
+/* ========== 头像 emoji 黑底修复 ==========
+   主题 sidebar.scss 给 .emoji 加了 background-color: var(--card-background) */
+.site-avatar .emoji {
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
 /* ========== 移动端汉堡菜单液态玻璃化（仅 <768px，桌面端不动） ========== */
 @media (max-width: 767px) {
     #main-menu {
@@ -816,5 +825,89 @@ button:not(#immersive-btn):not(.hamburger):not([type="submit"]):hover {
         -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
         border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 16px;
+    }
+}
+
+/* ========== 移动端搜索栏 ==========
+   桌面端隐藏，<768px 时显示在左栏头像下方 */
+.search-form.mobile-search {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .search-form.mobile-search {
+        display: block;
+        margin: var(--spacing-lg) 0;
+    }
+
+    .search-form.mobile-search p {
+        position: relative;
+        margin: 0;
+    }
+
+    .search-form.mobile-search input {
+        width: 100%;
+        padding: 12px 44px 12px 16px;
+        font-size: 1.4rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.08) 0%,
+            rgba(255, 255, 255, 0.02) 100%
+        );
+        backdrop-filter: blur(16px) saturate(150%);
+        -webkit-backdrop-filter: blur(16px) saturate(150%);
+        color: rgba(255, 255, 255, 0.9);
+        box-shadow:
+            0 4px 16px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .search-form.mobile-search input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .search-form.mobile-search input:focus {
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.12) 0%,
+            rgba(255, 255, 255, 0.04) 100%
+        );
+        border-color: rgba(255, 255, 255, 0.25);
+        box-shadow:
+            0 8px 28px rgba(0, 0, 0, 0.25),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        outline: none;
+    }
+
+    .search-form.mobile-search button {
+        position: absolute;
+        right: 4px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.6);
+        transition: color 0.25s ease;
+    }
+
+    .search-form.mobile-search button:hover {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .search-form.mobile-search button svg {
+        width: 18px;
+        height: 18px;
+        stroke-width: 1.5;
     }
 }

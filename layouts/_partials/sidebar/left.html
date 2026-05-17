@@ -49,6 +49,16 @@
         </ol>
     {{- end -}}
 
+    <!-- 移动端搜索栏：桌面端隐藏，竖屏时显示在菜单上方 -->
+    <form action="{{ ($.Site.GetPage "search").RelPermalink | default "/search/" }}" class="search-form mobile-search">
+        <p>
+            <input name="keyword" placeholder="{{ T `search.placeholder` }}" />
+            <button title="{{ T `search.title` }}">
+                {{ partial "helper/icon" "search" }}
+            </button>
+        </p>
+    </form>
+
     <ol class="menu" id="main-menu">
         {{ $currentPage := . }}
         {{ range .Site.Menus.main }}
