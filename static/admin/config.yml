@@ -17,7 +17,7 @@ collections:
     slug: "{{slug}}"
     fields:
       - {label: "标题", name: "title", widget: "string"}
-      - {label: "发布日期", name: "date", widget: "datetime", format: "2006-01-02T15:04:05Z07:00"}
+      - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ", date_format: "YYYY-MM-DD", time_format: "HH:mm"}
       - {label: "封面图", name: "image", widget: "image", required: false}
       - {label: "分类", name: "categories", widget: "list", allow_add: true}
       - {label: "标签", name: "tags", widget: "list", allow_add: true}
