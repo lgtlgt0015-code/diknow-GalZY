@@ -2,6 +2,9 @@ backend:
   name: github
   repo: lgtlgt0015-code/diknow-GalZY
   branch: main
+  base_url: https://galgame-cms-oauth.lgtlgt0015.workers.dev
+  auth_endpoint: /auth
+  callback_url: /callback
 
 media_folder: "static/img/uploads"
 public_folder: "/img/uploads"
