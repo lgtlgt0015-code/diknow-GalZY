@@ -1,11 +1,17 @@
 ---
-title: "Summer Pockets"
+title: Summer Pockets
 date: 2026-05-09
-slug: "summer-pockets"
-description: "Key 社回归原点的夏日物语，在偏远小岛上度过难忘的暑假"
-categories: ["Key社", "恋爱"]
-tags: ["全年龄", "PC", "Switch", "奇幻"]
-image: "/img/cover-summer-pockets.png"
+slug: summer-pockets
+image: /img/uploads/50.webp
+categories:
+  - Key社
+  - 恋爱
+tags:
+  - 全年龄
+  - PC
+  - Switch
+  - 奇幻
+description: Key 社回归原点的夏日物语，在偏远小岛上度过难忘的暑假
 ---
 
 ## 游戏简介
