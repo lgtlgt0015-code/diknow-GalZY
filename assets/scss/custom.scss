@@ -752,10 +752,21 @@ button:not(#immersive-btn):not(.hamburger):not([type="submit"]):hover {
         0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* ========== 归档 widget 去黑底：让容器透明，<a> 的 backdrop-filter 才能看到背景图 ========== */
-.right-sidebar .widget.archives {
+/* ========== 归档 widget 去黑底 ==========
+   真凶：主题 widgets.scss 给 .widget-archive--list 加了 @include card-style，
+   也就是 background-color: var(--card-background)。暗色模式下就是黑色块。
+   <a> 的 backdrop-filter 只能模糊到第一个 opaque 父层，被这层黑底拦截，
+   所以背景图永远透不过来。把它和外层 section 都透明掉即可。 */
+.right-sidebar .widget.archives,
+.right-sidebar .widget.archives .widget-archive--list {
     background: transparent !important;
+    background-color: transparent !important;
     box-shadow: none !important;
+}
+
+/* 年份之间的分隔线在液态玻璃胶囊布局里多余，去掉 */
+.right-sidebar .widget.archives .archives-year:not(:last-of-type) {
+    border-bottom: none !important;
 }
 
 /* ========== 移动端汉堡菜单液态玻璃化（仅 <768px，桌面端不动） ========== */
