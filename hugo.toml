@@ -1,6 +1,6 @@
-baseURL                = "https://galgame-re-1.pages.dev/"
-relativeURLs           = true
-canonifyURLs           = true
+baseURL                = "https://diknow-galzy.pages.dev/"
+relativeURLs           = false
+canonifyURLs           = false
 locale                 = "zh-cn"
 defaultContentLanguage = "zh"
 hasCJKLanguage         = true

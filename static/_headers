@@ -1,0 +1,7 @@
+/admin/config.yml
+  Content-Type: text/yaml; charset=utf-8
+  Cache-Control: no-cache
+
+/admin/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
