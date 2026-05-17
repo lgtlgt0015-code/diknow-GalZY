@@ -47,17 +47,17 @@
         icon = "brand-github"
 
 [[social]]
-    identifier = "telegram"
-    name       = "Telegram"
-    url        = "/contact/telegram/"
+    identifier = "qq"
+    name       = "QQ: 3402851762"
+    url        = "https://wpa.qq.com/msgrd?v=3&uin=3402851762&site=qq&menu=yes"
     weight     = 3
     [social.params]
-        icon = "telegram"
+        icon = "qq"
 
 [[social]]
-    identifier = "twitter"
-    name       = "Twitter"
-    url        = "/contact/twitter/"
+    identifier = "x"
+    name       = "X (Twitter)"
+    url        = "https://x.com/diknow_tik"
     weight     = 4
     [social.params]
-        icon = "brand-twitter"
+        icon = "brand-x"

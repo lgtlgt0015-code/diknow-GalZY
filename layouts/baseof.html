@@ -37,7 +37,7 @@
                 var idx = Math.floor(Math.random() * bgImages.length);
                 document.addEventListener('DOMContentLoaded', function() {
                     var style = document.createElement('style');
-                    style.textContent = 'body::before{background-image:url(' + bgImages[idx] + ')}';
+                    style.textContent = 'body::before{background-image:url(/' + bgImages[idx] + ')}';
                     document.head.appendChild(style);
                 });
             })();
