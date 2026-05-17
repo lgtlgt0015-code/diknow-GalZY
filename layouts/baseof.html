@@ -207,17 +207,31 @@
         </script>
 
         <script>
-            // 暗色模式切换
+            // 主题切换 - 新版 #theme-pill-btn
             (function() {
-                const darkToggle = document.getElementById('dark-mode-toggle');
-                if (!darkToggle) return;
-                darkToggle.addEventListener('click', function(e) {
+                var btn = document.getElementById('theme-pill-btn');
+                if (!btn) return;
+                var iconDark  = btn.querySelector('.theme-pill-icon-dark');
+                var iconLight = btn.querySelector('.theme-pill-icon-light');
+                var labelDark  = btn.querySelector('.theme-pill-label-dark');
+                var labelLight = btn.querySelector('.theme-pill-label-light');
+
+                function sync(scheme) {
+                    var isDark = scheme === 'dark';
+                    if (iconDark)  iconDark.style.display  = isDark ? '' : 'none';
+                    if (iconLight) iconLight.style.display = isDark ? 'none' : '';
+                    if (labelDark)  labelDark.style.display  = isDark ? '' : 'none';
+                    if (labelLight) labelLight.style.display = isDark ? 'none' : '';
+                }
+                sync(document.documentElement.dataset.scheme || 'dark');
+
+                btn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    e.stopPropagation();
-                    const current = document.documentElement.getAttribute('data-scheme');
-                    const next = current === 'dark' ? 'light' : 'dark';
-                    document.documentElement.setAttribute('data-scheme', next);
-                    localStorage.setItem('theme', next);
+                    var current = document.documentElement.dataset.scheme || 'dark';
+                    var next = current === 'dark' ? 'light' : 'dark';
+                    document.documentElement.dataset.scheme = next;
+                    localStorage.setItem('StackColorScheme', next);
+                    sync(next);
                 });
             })();
         </script>
