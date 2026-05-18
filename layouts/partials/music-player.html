@@ -6,26 +6,29 @@
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
   </button>
   <div id="music-card">
+    <!-- 左侧：控制按钮 -->
+    <div id="music-controls">
+      <button id="btn-prev" aria-label="上一首" title="上一首">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
+      </button>
+      <button id="btn-play" aria-label="播放" title="播放">
+        <svg class="icon-play" width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <svg class="icon-pause" width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+      <button id="btn-next" aria-label="下一首" title="下一首">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+      </button>
+    </div>
+    <!-- 中间：歌曲信息 -->
     <div id="music-info">
       <div id="music-title" class="music-marquee"><span>{{ (index $songs 0).title }}</span></div>
       <div id="music-artist">{{ (index $songs 0).artist }}</div>
-      <div id="music-controls">
-        <button id="btn-prev" aria-label="上一首" title="上一首">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
-        </button>
-        <button id="btn-play" aria-label="播放" title="播放">
-          <svg class="icon-play" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <svg class="icon-pause" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-        </button>
-        <button id="btn-next" aria-label="下一首" title="下一首">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
-        </button>
-      </div>
       <div id="music-progress">
         <div id="music-progress-bar"><div id="music-progress-fill"></div></div>
         <div id="music-time"><span id="time-current">0:00</span><span id="time-duration">0:00</span></div>
       </div>
     </div>
+    <!-- 右侧：封面 -->
     <div id="music-cover">
       <img src="" alt="" id="music-cover-img" style="display:none" />
       <div id="music-cover-fallback"></div>
@@ -36,7 +39,6 @@
 
 <script>
 (function(){
-  // Hugo jsonify 输出 JSON 字符串，用 JSON.parse 转回数组
   var playlist = JSON.parse({{ $songs | jsonify }});
   if (!Array.isArray(playlist) || !playlist.length) return;
 
@@ -64,6 +66,28 @@
   var progressFill = document.getElementById('music-progress-fill');
   var timeCurrent  = document.getElementById('time-current');
   var timeDuration = document.getElementById('time-duration');
+  var progressBar = document.getElementById('music-progress-bar');
+
+  // === localStorage 持久化 ===
+  var STORAGE_KEY = 'music_player_state';
+  function saveState() {
+    var s = { idx: idx, time: audio.currentTime || 0, playing: !audio.paused };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch(e){}
+  }
+  function restoreState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      var s = JSON.parse(raw);
+      if (s.idx >= 0 && s.idx < order.length) {
+        idx = s.idx;
+        load(idx);
+        audio.currentTime = s.time || 0;
+        return s.playing;
+      }
+    } catch(e){}
+    return false;
+  }
 
   function load(i) {
     idx = i;
@@ -87,6 +111,7 @@
     }
     audio.src = s.file;
     audio.load();
+    saveState();
   }
 
   function setPlaying(on) {
@@ -102,7 +127,7 @@
     return m + ':' + (sec < 10 ? '0' : '') + sec;
   }
 
-  // === 展开/收起逻辑 ===
+  // === 展开/收起 ===
   function showCard() {
     player.classList.add('is-expanded');
     document.body.classList.add('music-expanded');
@@ -113,24 +138,15 @@
     document.body.classList.remove('music-expanded');
     toggleBtn.setAttribute('aria-label','展开播放器');
   }
-
   toggleBtn.addEventListener('click', function(e){
     e.stopPropagation();
-    if (player.classList.contains('is-expanded')) hideCard();
-    else showCard();
+    player.classList.contains('is-expanded') ? hideCard() : showCard();
   });
-
-  // 点击卡片内部空白区域 → 收起
   card.addEventListener('click', function(e){
-    // 点任何地方都收起，除非点的是按钮
-    if (!e.target.closest('button')) hideCard();
+    if (!e.target.closest('button') && e.target !== progressBar && !progressBar.contains(e.target)) hideCard();
   });
-
-  // 点击页面其他地方 → 收起
   document.addEventListener('click', function(e){
-    if (player.classList.contains('is-expanded') && !player.contains(e.target)) {
-      hideCard();
-    }
+    if (player.classList.contains('is-expanded') && !player.contains(e.target)) hideCard();
   });
 
   // === 播放控制 ===
@@ -139,14 +155,12 @@
     if (audio.paused) { audio.play(); }
     else { audio.pause(); }
   });
-
   document.getElementById('btn-prev').addEventListener('click', function(e){
     e.stopPropagation();
     idx = (idx - 1 + order.length) % order.length;
     load(idx);
     audio.play();
   });
-
   document.getElementById('btn-next').addEventListener('click', function(e){
     e.stopPropagation();
     idx = (idx + 1) % order.length;
@@ -154,13 +168,13 @@
     audio.play();
   });
 
+  // === 音频事件 ===
   audio.addEventListener('loadedmetadata', function(){
     timeDuration.textContent = fmtTime(audio.duration);
   });
   audio.addEventListener('timeupdate', function(){
     if (!audio.duration) return;
-    var pct = audio.currentTime / audio.duration * 100;
-    progressFill.style.width = pct + '%';
+    progressFill.style.width = (audio.currentTime / audio.duration * 100) + '%';
     timeCurrent.textContent = fmtTime(audio.currentTime);
   });
   audio.addEventListener('ended', function(){
@@ -169,19 +183,34 @@
     load(idx);
     audio.play();
   });
-  audio.addEventListener('play',  function(){ setPlaying(true); });
-  audio.addEventListener('pause', function(){ setPlaying(false); });
-  audio.addEventListener('error', function(){
-    console.warn('Music player: failed to load', audio.src);
-    setPlaying(false);
-  });
+  audio.addEventListener('play',  function(){ setPlaying(true); saveState(); });
+  audio.addEventListener('pause', function(){ setPlaying(false); saveState(); });
 
-  document.getElementById('music-progress-bar').addEventListener('click', function(e){
-    e.stopPropagation();
+  // === 进度条拖动（支持鼠标和触摸） ===
+  function scrub(e) {
     if (!audio.duration) return;
-    var rect = this.getBoundingClientRect();
-    var pct = (e.clientX - rect.left) / rect.width;
+    e.preventDefault();
+    var rect = progressBar.getBoundingClientRect();
+    var x = e.touches ? e.touches[0].clientX : e.clientX;
+    var pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
     audio.currentTime = pct * audio.duration;
+  }
+  progressBar.addEventListener('click', function(e){ e.stopPropagation(); scrub(e); });
+  progressBar.addEventListener('mousedown', function(e){
+    e.stopPropagation(); e.preventDefault();
+    scrub(e);
+    var onMove = function(ev){ scrub(ev); };
+    var onUp = function(){ document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+  progressBar.addEventListener('touchstart', function(e){
+    e.stopPropagation();
+    scrub(e);
+    var onMove = function(ev){ scrub(ev); };
+    var onEnd = function(){ document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onEnd); };
+    document.addEventListener('touchmove', onMove, {passive: false});
+    document.addEventListener('touchend', onEnd);
   });
 
   // 沉浸模式隐藏
@@ -189,7 +218,20 @@
     player.style.display = document.body.classList.contains('immersive-mode') ? 'none' : '';
   }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-  load(0);
+  // === 初始化 ===
+  var wasPlaying = restoreState();
+  if (wasPlaying) {
+    // 需等用户交互后才能自动播放
+    var resume = function(){
+      audio.play().then(function(){ setPlaying(true); }).catch(function(){});
+      document.removeEventListener('click', resume);
+      document.removeEventListener('touchend', resume);
+    };
+    document.addEventListener('click', resume, {once: true});
+    document.addEventListener('touchend', resume, {once: true});
+  } else {
+    load(0);
+  }
 })();
 </script>
 {{- end -}}

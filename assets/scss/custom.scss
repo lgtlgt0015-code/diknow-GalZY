@@ -23,7 +23,7 @@ body {
 /* ========== 沉浸模式按钮（左下角固定）- 液态玻璃效果 ========== */
 #immersive-btn {
     position: fixed;
-    bottom: 28px;
+    bottom: 24px;
     left: 28px;
     z-index: 9999;
     display: flex;
@@ -118,7 +118,7 @@ body.immersive-mode #immersive-btn {
 
 /* 播放器卡片展开时，沉浸按钮上移让位 */
 body.music-expanded #immersive-btn {
-    bottom: 150px;
+    bottom: 120px;
     transition: bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1139,8 +1139,8 @@ body.immersive-mode #immersive-viewport {
 /* ========== 音乐播放器 — 右下角液态玻璃 ========== */
 #music-player {
     position: fixed;
-    bottom: 28px;
-    right: 28px;
+    bottom: 24px;
+    right: 22px;
     z-index: 9997;
     display: flex;
     align-items: flex-end;
@@ -1150,8 +1150,8 @@ body.immersive-mode #immersive-viewport {
 
 /* ---- 圆形按钮 ---- */
 #music-toggle {
-    width: 48px;
-    height: 48px;
+    width: 46px;
+    height: 46px;
     flex-shrink: 0;
     border-radius: 50%;
     background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%);
@@ -1177,16 +1177,16 @@ body.immersive-mode #immersive-viewport {
     box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 12px rgba(129,140,248,0.25), inset 0 1px 0 rgba(255,255,255,0.12);
     border-color: rgba(167,139,250,0.35);
 }
-/* 展开时圆形按钮消失 */
 #music-player.is-expanded #music-toggle {
     opacity: 0;
     pointer-events: none;
     transform: scale(0.6);
 }
 
-/* ---- 卡片面板（液态玻璃） ---- */
+/* ---- 卡片面板 ---- */
 #music-card {
     display: flex;
+    flex-direction: row;
     align-items: stretch;
     background: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%);
     border: 1px solid rgba(255,255,255,0.14);
@@ -1195,7 +1195,6 @@ body.immersive-mode #immersive-viewport {
     -webkit-backdrop-filter: blur(28px) saturate(180%);
     box-shadow: 0 8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
     overflow: hidden;
-    width: 320px;
     max-width: 0;
     opacity: 0;
     pointer-events: none;
@@ -1206,25 +1205,60 @@ body.immersive-mode #immersive-viewport {
     cursor: default;
 }
 #music-player.is-expanded #music-card {
-    max-width: 340px;
+    max-width: 400px;
     opacity: 1;
     pointer-events: auto;
-    margin-right: 12px;
+    margin-right: 10px;
 }
 
-/* ---- 左侧信息区 ---- */
+/* ---- 左侧：控制按钮（垂直排列） ---- */
+#music-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 0 10px;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(255,255,255,0.06);
+}
+#music-controls button {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.72);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+#music-controls button:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.08);
+}
+#btn-play {
+    width: 44px;
+    height: 44px;
+    background: rgba(255,255,255,0.12) !important;
+    border-radius: 50% !important;
+}
+#btn-play:hover {
+    background: rgba(255,255,255,0.20) !important;
+}
+
+/* ---- 中间：歌曲信息 ---- */
 #music-info {
-    padding: 14px 0 10px 16px;
+    padding: 12px 0 10px 14px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     min-width: 0;
     flex: 1;
 }
-
-/* 歌名 — 溢出时自动滚动 */
 #music-title {
-    font-size: 1.35rem;
+    font-size: 1.45rem;
     font-weight: 600;
     color: rgba(255,255,255,0.92);
     white-space: nowrap;
@@ -1245,9 +1279,8 @@ body.immersive-mode #immersive-viewport {
     0%   { transform: translateX(0); }
     100% { transform: translateX(-50%); }
 }
-
 #music-artist {
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     color: rgba(255,255,255,0.55);
     margin: 2px 0 8px;
     white-space: nowrap;
@@ -1255,76 +1288,43 @@ body.immersive-mode #immersive-viewport {
     text-overflow: ellipsis;
 }
 
-/* ---- 控制按钮 ---- */
-#music-controls {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-#music-controls button {
-    background: transparent;
-    border: none;
-    color: rgba(255,255,255,0.72);
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-}
-#music-controls button:hover {
-    color: #fff;
-    background: rgba(255,255,255,0.08);
-}
-#btn-play {
-    width: 40px;
-    height: 40px;
-    background: rgba(255,255,255,0.12) !important;
-    border-radius: 50% !important;
-}
-#btn-play:hover {
-    background: rgba(255,255,255,0.20) !important;
-}
-
 /* ---- 进度条 ---- */
 #music-progress {
-    margin-top: 10px;
+    margin-top: 8px;
     display: flex;
     flex-direction: column;
     gap: 2px;
-    padding-right: 8px;
 }
 #music-progress-bar {
-    height: 4px;
+    height: 5px;
     background: rgba(255,255,255,0.12);
-    border-radius: 2px;
+    border-radius: 3px;
     cursor: pointer;
     overflow: hidden;
+    touch-action: none;
 }
 #music-progress-fill {
     height: 100%;
     width: 0%;
     background: linear-gradient(90deg, #818cf8, #a78bfa);
-    border-radius: 2px;
+    border-radius: 3px;
     transition: width 0.15s linear;
 }
 #music-time {
     display: flex;
     justify-content: space-between;
-    font-size: 1rem;
+    font-size: 1.05rem;
     color: rgba(255,255,255,0.4);
 }
 
-/* ---- 右侧封面 ---- */
+/* ---- 右侧封面（更宽） ---- */
 #music-cover {
-    width: 90px;
+    width: 120px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, rgba(129,140,248,0.12) 0%, rgba(167,139,250,0.06) 100%);
-    border-left: 1px solid rgba(255,255,255,0.08);
 }
 #music-cover img {
     width: 100%;
@@ -1332,9 +1332,9 @@ body.immersive-mode #immersive-viewport {
     object-fit: cover;
 }
 #music-cover-fallback {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
     background: linear-gradient(135deg, rgba(129,140,248,0.25), rgba(167,139,250,0.15));
     display: flex;
     align-items: center;
@@ -1342,7 +1342,7 @@ body.immersive-mode #immersive-viewport {
 }
 #music-cover-fallback::after {
     content: "♪";
-    font-size: 2rem;
+    font-size: 2.2rem;
     color: rgba(255,255,255,0.5);
 }
 
@@ -1351,69 +1351,42 @@ body.immersive-mode #music-player {
     display: none !important;
 }
 
-/* ========== 移动端：卡片从底部弹上，左右留等宽缝隙 ========== */
+/* ========== 移动端 ========== */
 @media (max-width: 767px) {
     #music-player {
-        bottom: auto;
-        right: auto;
-        position: fixed;
-        inset: auto;
-        /* 展开态：卡片固定铺满底部 */
+        bottom: auto; right: auto;
+        position: fixed; inset: auto;
         display: block;
     }
-    /* 圆形按钮 — 始终右下角 */
     #music-toggle {
         position: fixed;
-        bottom: 12px;
-        right: 12px;
+        bottom: 20px; right: 12px;
         z-index: 9998;
     }
-    /* 展开时圆形按钮消失 */
     #music-player.is-expanded #music-toggle {
-        opacity: 0;
-        pointer-events: none;
+        opacity: 0; pointer-events: none;
         transform: scale(0.4);
         transition: opacity 0.2s ease, transform 0.25s ease;
     }
-    /* 卡片 — 从底部弹出，左右下留 8px 缝隙 */
     #music-card {
         position: fixed;
-        left: 8px;
-        right: 8px;
-        bottom: 12px;
-        width: auto;
-        max-width: none;
+        left: 8px; right: 8px; bottom: 12px;
+        width: auto; max-width: none;
         border-radius: 16px;
         flex-direction: row;
-        /* 收起态：藏到屏幕下方 */
         transform: translateY(calc(100% + 20px));
-        opacity: 0;
-        pointer-events: none;
-        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                    opacity 0.3s ease;
+        opacity: 0; pointer-events: none;
+        transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
     }
     #music-player.is-expanded #music-card {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: auto;
-        max-width: none;
-        margin-right: 0;
+        transform: translateY(0); opacity: 1;
+        pointer-events: auto; max-width: none; margin-right: 0;
     }
-    /* 封面 56px */
-    #music-cover {
-        width: 56px;
-    }
-    /* 信息区紧凑 */
-    #music-info {
-        padding: 8px 0 8px 12px;
-    }
-    #music-title { font-size: 1.1rem; }
-    #music-artist { font-size: 0.95rem; margin: 1px 0 6px; }
-    #btn-play {
-        width: 34px;
-        height: 34px;
-    }
-    #music-progress {
-        margin-top: 6px;
-    }
+    #music-cover { width: 70px; }
+    #music-controls { padding: 0 6px; gap: 0; }
+    #btn-play { width: 38px; height: 38px; }
+    #music-info { padding: 8px 0 6px 10px; }
+    #music-title { font-size: 1.15rem; }
+    #music-artist { font-size: 1rem; margin: 1px 0 6px; }
+    #music-progress { margin-top: 4px; }
 }
