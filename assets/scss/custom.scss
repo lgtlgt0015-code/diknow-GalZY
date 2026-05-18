@@ -112,6 +112,12 @@ body.immersive-mode #immersive-btn {
     border-color: rgba(129, 140, 248, 0.5);
 }
 
+/* 播放器卡片展开时，沉浸按钮上移让位 */
+body.music-expanded #immersive-btn {
+    bottom: 150px;
+    transition: bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* ========== 沉浸模式：优雅隐藏/显示所有 UI ========== */
 body.immersive-mode::before {
     opacity: 1;

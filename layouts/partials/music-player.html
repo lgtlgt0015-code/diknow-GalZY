@@ -27,12 +27,8 @@
       </div>
     </div>
     <div id="music-cover">
-      {{- $cover0 := (index $songs 0).cover -}}
-      {{- if $cover0 -}}
-      <img src="{{ $cover0 | relURL }}" alt="" id="music-cover-img" />
-      {{- else -}}
+      <img src="" alt="" id="music-cover-img" style="display:none" />
       <div id="music-cover-fallback"></div>
-      {{- end -}}
     </div>
   </div>
   <audio id="music-audio" preload="none"></audio>
@@ -78,7 +74,7 @@
       if (coverFallback) coverFallback.style.display = 'none';
     } else {
       if (coverImg) coverImg.style.display = 'none';
-      if (coverFallback) coverFallback.style.display = '';
+      if (coverFallback) coverFallback.style.display = 'flex';
     }
     audio.src = s.file;
     audio.load();
@@ -100,10 +96,12 @@
   // === 展开/收起逻辑 ===
   function showCard() {
     player.classList.add('is-expanded');
+    document.body.classList.add('music-expanded');
     toggleBtn.setAttribute('aria-label','收起播放器');
   }
   function hideCard() {
     player.classList.remove('is-expanded');
+    document.body.classList.remove('music-expanded');
     toggleBtn.setAttribute('aria-label','展开播放器');
   }
 
