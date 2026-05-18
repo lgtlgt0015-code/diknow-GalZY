@@ -789,8 +789,12 @@ button:not(#immersive-btn):not(.hamburger):not([type="submit"]):hover {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.search-form.widget input::placeholder {
-    color: rgba(255, 255, 255, 0.5) !important;
+.search-form.widget input::placeholder,
+.search-form.widget input::-webkit-input-placeholder,
+.search-form.widget input::-moz-placeholder,
+.search-form.widget input:-ms-input-placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
 }
 
 .search-form.widget input:focus {
@@ -804,6 +808,15 @@ button:not(#immersive-btn):not(.hamburger):not([type="submit"]):hover {
         0 8px 28px rgba(0, 0, 0, 0.25),
         inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
     outline: none !important;
+}
+
+/* 搜索页主表单 placeholder 也要可见 */
+.main .search-form input::placeholder,
+.main .search-form input::-webkit-input-placeholder,
+.main .search-form input::-moz-placeholder,
+.main .search-form input:-ms-input-placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
 }
 
 /* ========== 头像 emoji 黑底修复 ==========

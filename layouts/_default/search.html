@@ -27,7 +27,8 @@
 
 <script>
 (function(){
-    const form = document.querySelector('.search-form');
+    // 必须排除左侧栏的 mobile-search，只取主内容区的搜索表单
+    const form = document.querySelector('.search-form:not(.mobile-search)');
     const input = form ? form.querySelector('input[name="keyword"]') : null;
     const resultContainer = document.querySelector('.search-result');
     const resultTitle = document.querySelector('.search-result--title');
@@ -35,7 +36,7 @@
     const jsonUrl = form ? form.dataset.json : null;
     
     if (!form || !input || !resultContainer || !resultList || !jsonUrl) {
-        console.error('Search: Missing required elements');
+        console.error('Search: Missing required elements. form=', form, 'input=', input, 'jsonUrl=', jsonUrl);
         return;
     }
     
