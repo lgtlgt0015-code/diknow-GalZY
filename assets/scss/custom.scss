@@ -1,6 +1,3 @@
-html {
-    background: #0d0d12;
-}
 body {
     padding-bottom: env(safe-area-inset-bottom, 0px);
     &::before {
@@ -300,6 +297,7 @@ body.immersive-mode #immersive-btn {
 /* 完全脱离主题旧的 #dark-mode-toggle 系统：独立 ID / class，
    不受 sidebar.scss 中任何 #dark-mode-toggle 旧规则影响 */
 #main-menu > li.theme-pill {
+    list-style: none !important;
     /* 紧贴搜索按钮下面，永远不再用 margin-top:auto 飘到底部 */
     margin-top: 0 !important;
     list-style: none;
@@ -1211,36 +1209,43 @@ body.immersive-mode #immersive-viewport {
     margin-right: 10px;
 }
 
-/* ---- 左侧：控制按钮（垂直排列） ---- */
+/* ---- 左侧：控制按钮（两列：左列上下首，右列播放） ---- */
 #music-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 12px;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+#music-controls-skip {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 2px;
-    padding: 0 10px;
-    flex-shrink: 0;
-    border-right: 1px solid rgba(255,255,255,0.06);
+    gap: 0;
 }
-#music-controls button {
+#music-controls button,
+#music-controls-skip button {
     background: transparent;
     border: none;
     color: rgba(255,255,255,0.72);
     cursor: pointer;
-    padding: 5px;
+    padding: 4px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
 }
-#music-controls button:hover {
+#music-controls button:hover,
+#music-controls-skip button:hover {
     color: #fff;
     background: rgba(255,255,255,0.08);
 }
 #btn-play {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     background: rgba(255,255,255,0.12) !important;
     border-radius: 50% !important;
 }
