@@ -21,7 +21,7 @@ body {
 #immersive-btn {
     position: fixed;
     bottom: 24px;
-    left: 28px;
+    left: 22px;
     z-index: 9999;
     display: flex;
     align-items: center;
@@ -239,7 +239,7 @@ body.immersive-mode #immersive-btn {
 }
 
 .menu > li > a {
-    border-radius: 12px;
+    border-radius: 16px;
     margin: 2px 6px;
     padding: 8px 12px !important;
     background: linear-gradient(
@@ -296,7 +296,7 @@ body.immersive-mode #immersive-btn {
 /* ========== 主题切换药丸按钮 - 全新独立实现 ========== */
 /* 完全脱离主题旧的 #dark-mode-toggle 系统：独立 ID / class，
    不受 sidebar.scss 中任何 #dark-mode-toggle 旧规则影响 */
-#main-menu > li.theme-pill {
+#main-menu li.theme-pill {
     list-style: none !important;
     /* 紧贴搜索按钮下面，永远不再用 margin-top:auto 飘到底部 */
     margin-top: 0 !important;
@@ -389,7 +389,7 @@ body.immersive-mode #immersive-btn {
     justify-content: center;
     width: 38px;
     height: 38px;
-    border-radius: 12px;
+    border-radius: 16px;
     background: linear-gradient(
         135deg,
         rgba(255, 255, 255, 0.1) 0%,
@@ -481,35 +481,33 @@ a.title:hover {
     text-shadow: 0 0 20px rgba(129, 140, 248, 0.4);
 }
 
-/* 标签/分类 - 液态玻璃效果 */
+/* 标签 — 多彩淡色 nth-child 配色 + 大圆角 */
 .tags a.tag,
 .categories a.category {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    border-radius: 10px;
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.1) 0%,
-        rgba(255, 255, 255, 0.03) 100%
-    );
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
     backdrop-filter: blur(8px) saturate(150%);
     -webkit-backdrop-filter: blur(8px) saturate(150%);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    color: rgba(255,255,255,0.9) !important;
+    font-weight: 500;
 }
+.tags a.tag:nth-child(6n+1) { background: rgba(129, 140, 248, 0.22); }  /* 紫 */
+.tags a.tag:nth-child(6n+2) { background: rgba(244, 114, 182, 0.22); }  /* 粉 */
+.tags a.tag:nth-child(6n+3) { background: rgba(52, 211, 153, 0.22); }   /* 绿 */
+.tags a.tag:nth-child(6n+4) { background: rgba(251, 191, 36, 0.22); }   /* 金 */
+.tags a.tag:nth-child(6n+5) { background: rgba(56, 189, 248, 0.22); }   /* 蓝 */
+.tags a.tag:nth-child(6n+6) { background: rgba(251, 146, 60, 0.22); }   /* 橙 */
 
 .tags a.tag:hover,
 .categories a.category:hover {
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.18) 0%,
-        rgba(255, 255, 255, 0.06) 100%
-    ) !important;
-    color: #a5b4fc !important;
-    border-color: rgba(255, 255, 255, 0.25);
     transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.25);
     box-shadow:
-        0 4px 12px rgba(99, 102, 241, 0.15),
+        0 4px 12px rgba(99, 102, 241, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    filter: brightness(1.2);
 }
 
 /* 按钮通用 hover */
@@ -1255,7 +1253,7 @@ body.immersive-mode #immersive-viewport {
 
 /* ---- 中间：歌曲信息 ---- */
 #music-info {
-    padding: 12px 0 10px 14px;
+    padding: 12px 8px 10px 14px;
     display: flex;
     flex-direction: column;
     justify-content: center;
