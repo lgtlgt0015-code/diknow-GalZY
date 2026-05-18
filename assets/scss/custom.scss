@@ -45,11 +45,15 @@ body.immersive-mode #immersive-viewport {
         translate(var(--pan-x, 0px), var(--pan-y, 0px))
         scale(var(--zoom, 1));
     transform-origin: center center;
-    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    /* No transition for instant drag response */
     user-select: none;
     -webkit-user-select: none;
     will-change: transform;
     cursor: grab;
+}
+
+#immersive-canvas.is-animating {
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #immersive-canvas:active {
