@@ -756,12 +756,14 @@ button:not(#immersive-btn):not(.hamburger):not([type="submit"]):hover {
    真凶：主题 widgets.scss 给 .widget-archive--list 加了 @include card-style，
    也就是 background-color: var(--card-background)。暗色模式下就是黑色块。
    <a> 的 backdrop-filter 只能模糊到第一个 opaque 父层，被这层黑底拦截，
-   所以背景图永远透不过来。把它和外层 section 都透明掉即可。 */
+   所以背景图永远透不过来。把所有祖先容器都透明掉即可。 */
 .right-sidebar .widget.archives,
-.right-sidebar .widget.archives .widget-archive--list {
+.right-sidebar .widget.archives .widget-archive--list,
+.right-sidebar .widget.archives .archives-year {
     background: transparent !important;
     background-color: transparent !important;
     box-shadow: none !important;
+    border: none !important;
 }
 
 /* 年份之间的分隔线在液态玻璃胶囊布局里多余，去掉 */
