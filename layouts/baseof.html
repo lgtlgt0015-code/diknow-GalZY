@@ -94,12 +94,12 @@
                     }
                 }
 
-                // ===== 沉浸模式 - 完全重写 =====
-                // 原理：创建视口大小 div，背景 contain 铺满，
-                // transform scale 真正缩放图片，translate 拖动平移
+                // ===== 沉浸模式 - 支持触摸 + 维持当前背景区域 =====
+                // 进入沉浸时保持 cover 裁剪状态，用户可缩小查看全貌、拖动平移
                 var panel = null;
                 var st = { x: 0, y: 0, scale: 1, vx: 0, vy: 0, ts: 1 };
                 var dr = { on: false, lx: 0, ly: 0, lt: 0 };
+                var pinch = { on: false, dist: 0, cx: 0, cy: 0 };
                 var loop = null;
 
                 function enterImmersive() {
@@ -113,13 +113,15 @@
                         'position:fixed;z-index:9999;pointer-events:auto;cursor:grab;' +
                         'width:100vw;height:100dvh;top:0;left:0;' +
                         'background-image:' + cs.backgroundImage + ';' +
-                        'background-size:contain;background-position:center;background-repeat:no-repeat;' +
-                        'opacity:0;transition:opacity 0.6s ease;will-change:transform;';
+                        'background-size:cover;background-position:center;background-repeat:no-repeat;' +
+                        'opacity:0;transition:opacity 0.6s ease;will-change:transform;' +
+                        '-webkit-user-select:none;user-select:none;touch-action:none;';
                     document.body.appendChild(panel);
                     var h = document.getElementById('imm-hide');
                     if (!h) { h = document.createElement('style'); h.id = 'imm-hide'; document.head.appendChild(h); }
                     h.textContent = 'body.immersive-mode::before{opacity:0!important}';
                     requestAnimationFrame(function() { panel.style.opacity = '1'; });
+                    // 初始 scale=1，cover 模式下就是当前背景显示的区域
                     st.x = 0; st.y = 0; st.scale = 1; st.ts = 1; st.vx = 0; st.vy = 0;
                 }
 
@@ -142,7 +144,7 @@
                     if (Math.abs(ds) > 0.001) st.scale += ds * 0.12;
                     else st.scale = st.ts;
 
-                    if (!dr.on) {
+                    if (!dr.on && !pinch.on) {
                         st.x += st.vx;
                         st.y += st.vy;
                         st.vx *= 0.95;
@@ -155,13 +157,20 @@
                         panel.style.transform = 'translate(' + st.x + 'px,' + st.y + 'px) scale(' + st.scale + ')';
                     }
 
-                    var busy = Math.abs(st.vx) > 0.05 || Math.abs(st.vy) > 0.05 || Math.abs(ds) > 0.001 || dr.on;
+                    var busy = Math.abs(st.vx) > 0.05 || Math.abs(st.vy) > 0.05 || Math.abs(ds) > 0.001 || dr.on || pinch.on;
                     if (busy) loop = requestAnimationFrame(tick);
                     else loop = null;
                 }
 
                 function ensureLoop() { if (!loop) loop = requestAnimationFrame(tick); }
 
+                function pinchDist(t) {
+                    var dx = t[0].clientX - t[1].clientX;
+                    var dy = t[0].clientY - t[1].clientY;
+                    return Math.sqrt(dx * dx + dy * dy);
+                }
+
+                // --- Mouse events (desktop) ---
                 document.addEventListener('mousedown', function(e) {
                     if (!isImmersive || !panel) return;
                     if (e.target.closest('#immersive-btn')) return;
@@ -196,6 +205,60 @@
                     st.ts = Math.max(0.1, Math.min(5, st.ts + (e.deltaY > 0 ? -0.2 : 0.2)));
                     ensureLoop();
                 }, { passive: false });
+
+                // --- Touch events (mobile) ---
+                document.addEventListener('touchstart', function(e) {
+                    if (!isImmersive || !panel) return;
+                    if (e.target.closest('#immersive-btn')) return;
+                    if (e.touches.length === 2) {
+                        // Start pinch
+                        pinch.on = true; pinch.dist = pinchDist(e.touches);
+                        pinch.cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                        pinch.cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                        dr.on = false; st.vx = 0; st.vy = 0;
+                        e.preventDefault();
+                        ensureLoop();
+                    } else if (e.touches.length === 1) {
+                        dr.on = true;
+                        dr.lx = e.touches[0].clientX; dr.ly = e.touches[0].clientY;
+                        dr.lt = performance.now();
+                        st.vx = 0; st.vy = 0;
+                        e.preventDefault();
+                        ensureLoop();
+                    }
+                }, { passive: false });
+
+                document.addEventListener('touchmove', function(e) {
+                    if (!isImmersive || !panel) return;
+                    if (pinch.on && e.touches.length === 2) {
+                        var newDist = pinchDist(e.touches);
+                        var ratio = newDist / pinch.dist;
+                        st.ts = Math.max(0.1, Math.min(5, st.ts * ratio));
+                        pinch.dist = newDist;
+                        e.preventDefault();
+                    } else if (dr.on && e.touches.length === 1) {
+                        var now = performance.now(), dt = now - dr.lt;
+                        var dx = e.touches[0].clientX - dr.lx, dy = e.touches[0].clientY - dr.ly;
+                        if (dt > 0) {
+                            st.vx = st.vx * 0.4 + (dx / dt * 16) * 0.6;
+                            st.vy = st.vy * 0.4 + (dy / dt * 16) * 0.6;
+                        }
+                        st.x += dx; st.y += dy;
+                        dr.lx = e.touches[0].clientX; dr.ly = e.touches[0].clientY;
+                        dr.lt = now;
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+
+                document.addEventListener('touchend', function(e) {
+                    if (pinch.on) {
+                        pinch.on = false;
+                    }
+                    if (dr.on && e.touches.length === 0) {
+                        dr.on = false;
+                        st.vx *= 1.8; st.vy *= 1.8;
+                    }
+                });
 
                 btn.addEventListener('click', function() {
                     isImmersive = !isImmersive;
