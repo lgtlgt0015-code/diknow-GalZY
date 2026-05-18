@@ -2,7 +2,7 @@
 title: Summer Pockets
 date: 2026-05-09
 slug: summer-pockets
-image: /img/uploads/50-1-.webp
+image: /img/uploads/summer-pockets/cover.webp
 categories:
   - Key社
   - 恋爱

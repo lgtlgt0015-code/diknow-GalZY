@@ -6,6 +6,7 @@ backend:
   auth_endpoint: /auth
   callback_url: /callback
 
+# 全局媒体库（用于新建帖子前的临时上传 / 跨帖共享素材）
 media_folder: "static/img/uploads"
 public_folder: "/img/uploads"
 
@@ -15,6 +16,9 @@ collections:
     folder: "content/post"
     create: true
     slug: "{{slug}}"
+    # ★ 每个帖子独占一个媒体子文件夹，写入相对路径
+    media_folder: "../../static/img/uploads/{{slug}}"
+    public_folder: "/img/uploads/{{slug}}"
     fields:
       - {label: "标题", name: "title", widget: "string"}
       - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ssZ", date_format: "YYYY-MM-DD", time_format: "HH:mm"}
