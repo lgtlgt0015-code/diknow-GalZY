@@ -11,6 +11,8 @@
   </style>
 </head>
 <body>
-  <script src="https://unpkg.com/decap-cms@3.6.1/dist/decap-cms.js"></script>
+  <!-- Sveltia CMS：Decap 的 drop-in 替代品，配置 100% 兼容
+       中文输入法不会触发 Slate.js 的 toDOMPoint 崩溃 -->
+  <script type="module" src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
 </body>
 </html>
