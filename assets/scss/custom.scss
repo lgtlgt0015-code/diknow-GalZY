@@ -878,10 +878,13 @@ body.template-search .search-form.mobile-search {
         backdrop-filter: blur(24px) saturate(180%) !important;
         -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
         border: 1px solid rgba(255, 255, 255, 0.12);
-        /* border-radius 移到子级，避免 slideDown 动画期间圆角裁剪导致按钮宽度闪烁 */
+        border-radius: 16px;
     }
-    #main-menu > li:first-child > a { border-radius: 16px 16px 0 0; }
-    #main-menu > li.theme-pill > a { border-radius: 0 0 16px 16px; }
+    /* slideDown 动画期间 overflow:hidden + border-radius 会裁剪内容导致宽度闪烁，
+       利用 menu.js 在动画中加的 .transiting 类临时关掉圆角 */
+    #main-menu.transiting {
+        border-radius: 0 !important;
+    }
 }
 
 /* ========== 移动端搜索栏 ==========
