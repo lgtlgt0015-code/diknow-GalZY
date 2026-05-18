@@ -1019,3 +1019,109 @@ body.immersive-mode #immersive-viewport {
 #immersive-canvas.is-animating {
     transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* ========== 帖子详情页液态玻璃化 ==========
+   主题 article.scss 给 .main-article / pre / blockquote / table 都用了
+   纯色 var(--card-background)，覆盖成磨砂玻璃。透明度比侧栏稍重，
+   保证长文阅读时不分心。 */
+
+/* 主卡：文章整体容器 */
+.article-page .main-article {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.10) 0%,
+        rgba(255, 255, 255, 0.04) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+/* 文章 hero 图下方的标题/元信息区原本是不透明叠层，去掉以保持玻璃通透 */
+.article-page .main-article .article-header .article-details,
+.article-page .main-article .article-footer {
+    background: transparent !important;
+}
+
+/* 行内代码 `xxx` */
+.article-page .article-content code,
+.article-page .article-content :not(pre) > code {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 6px;
+    padding: 2px 6px;
+    backdrop-filter: blur(6px) saturate(150%);
+    -webkit-backdrop-filter: blur(6px) saturate(150%);
+}
+
+/* 代码块 ```...``` */
+.article-page .article-content pre {
+    background: linear-gradient(
+        135deg,
+        rgba(20, 20, 30, 0.55) 0%,
+        rgba(15, 15, 25, 0.45) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+}
+.article-page .article-content pre code {
+    background: transparent !important;
+    border: none;
+    padding: 0;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+/* 引用块 > xxx */
+.article-page .article-content blockquote {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.06) 0%,
+        rgba(255, 255, 255, 0.02) 100%
+    ) !important;
+    border-inline-start: 3px solid rgba(165, 180, 252, 0.6);
+    backdrop-filter: blur(10px) saturate(150%);
+    -webkit-backdrop-filter: blur(10px) saturate(150%);
+    border-radius: 0 12px 12px 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* 表格：让斑马纹也变成磨砂 */
+.article-page .article-content table {
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+}
+.article-page .article-content table tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+}
+.article-page .article-content table th,
+.article-page .article-content table td {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 相关文章 / 链接卡片 */
+.article-page .article-list--compact article,
+.article-page .related-content article {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.02) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.20),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
