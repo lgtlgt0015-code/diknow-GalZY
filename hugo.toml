@@ -22,7 +22,6 @@ rssFullContent         = true
 
     [params.sidebar]
         compact  = false
-        emoji    = "🎮"
         subtitle = "GalGame 攻略 · 评测 · 资源"
         avatar   = "/img/avatar.png"
 
