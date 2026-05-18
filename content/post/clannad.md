@@ -3,8 +3,7 @@ title: "Clannad"
 date: 2026-05-09
 slug: "clannad"
 description: "Key 社经典催泪 Galgame，讲述家族、友情与爱情的故事"
-categories: ["Key社", "恋爱", "催泪"]
-tags: ["全年龄", "PC"]
+tags: ["Key社", "恋爱", "催泪", "全年龄", "PC"]
 image: "/img/cover-clannad.jpg"
 ---
 

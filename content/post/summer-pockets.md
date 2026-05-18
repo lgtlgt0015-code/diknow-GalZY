@@ -3,14 +3,13 @@ title: Summer Pockets
 date: 2026-05-09
 slug: summer-pockets
 image: /img/uploads/summer-pockets/cover.webp
-categories:
-  - Key社
-  - 恋爱
 tags:
   - 全年龄
   - PC
   - Switch
   - 奇幻
+  - Key社
+  - 恋爱
 description: Key 社回归原点的夏日物语，在偏远小岛上度过难忘的暑假
 ---
 
