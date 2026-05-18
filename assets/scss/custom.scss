@@ -138,7 +138,9 @@ main.main,
 .hamburger {
     opacity: 1;
     pointer-events: auto;
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .left-sidebar {
@@ -158,21 +160,27 @@ body.immersive-mode .left-sidebar {
     opacity: 0;
     pointer-events: none;
     transform: translateX(-40px);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body.immersive-mode .right-sidebar {
     opacity: 0;
     pointer-events: none;
     transform: translateX(40px);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body.immersive-mode main.main {
     opacity: 0;
     pointer-events: none;
     transform: scale(0.95);
-    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body.immersive-mode .site-footer,
@@ -180,6 +188,14 @@ body.immersive-mode .hamburger {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 沉浸模式切换时防止 backdrop-filter 闪烁 —— 强制 GPU 预合成 */
+.left-sidebar,
+.right-sidebar,
+main.main {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 /* 沉浸模式按钮优雅动画 */
@@ -786,7 +802,13 @@ button:not(#immersive-btn):not(.hamburger):not([type="submit"]):hover {
         0 4px 16px rgba(0, 0, 0, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
     color: rgba(255, 255, 255, 0.9) !important;
+    padding: 12px 44px 12px 16px !important;
+    font-size: 1.4rem !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* widget 内 label 太占地方，桌面端隐藏 */
+.search-form.widget label {
+    display: none;
 }
 
 .search-form.widget input::placeholder,
