@@ -133,10 +133,10 @@ body.immersive-mode .container {
 main.main,
 .site-footer,
 .hamburger {
-    opacity: 1;
+    visibility: visible;
     pointer-events: auto;
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0s linear 0s;
 }
 
 .left-sidebar {
@@ -153,34 +153,34 @@ main.main {
 
 /* 沉浸模式 - 隐藏 */
 body.immersive-mode .left-sidebar {
-    opacity: 0;
+    visibility: hidden;
     pointer-events: none;
     transform: translateX(-40px);
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0s linear 0.6s;
 }
 
 body.immersive-mode .right-sidebar {
-    opacity: 0;
+    visibility: hidden;
     pointer-events: none;
     transform: translateX(40px);
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0s linear 0.6s;
 }
 
 body.immersive-mode main.main {
-    opacity: 0;
+    visibility: hidden;
     pointer-events: none;
     transform: scale(0.95);
-    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0s linear 0.7s;
 }
 
 body.immersive-mode .site-footer,
 body.immersive-mode .hamburger {
-    opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: visibility 0s linear 0.5s;
 }
 
 /* 沉浸模式按钮优雅动画 */
