@@ -296,10 +296,13 @@ body.immersive-mode #immersive-btn {
 /* ========== 主题切换药丸按钮 - 全新独立实现 ========== */
 /* 完全脱离主题旧的 #dark-mode-toggle 系统：独立 ID / class，
    不受 sidebar.scss 中任何 #dark-mode-toggle 旧规则影响 */
+/* 菜单底部区域不再飘到底部，和上面按钮自然衔接 */
+#main-menu .menu-bottom-section {
+    margin-top: 0 !important;
+    padding-top: 4px;
+}
 #main-menu li.theme-pill {
     list-style: none !important;
-    /* 紧贴搜索按钮下面，永远不再用 margin-top:auto 飘到底部 */
-    margin-top: 0 !important;
     list-style: none;
     padding: 0;
     width: 100%;
@@ -481,7 +484,32 @@ a.title:hover {
     text-shadow: 0 0 20px rgba(129, 140, 248, 0.4);
 }
 
-/* 标签 — 多彩淡色 nth-child 配色 + 大圆角 */
+/* 文章卡片上的标签 — 多彩淡色 */
+.article-tags a {
+    display: inline-block;
+    padding: 4px 12px;
+    margin: 2px;
+    border-radius: 20px;
+    font-size: 1.25rem;
+    font-weight: 500;
+    text-decoration: none !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.88) !important;
+}
+.article-tags a:nth-of-type(6n+1) { background: rgba(129, 140, 248, 0.22); }
+.article-tags a:nth-of-type(6n+2) { background: rgba(244, 114, 182, 0.22); }
+.article-tags a:nth-of-type(6n+3) { background: rgba(52, 211, 153, 0.22); }
+.article-tags a:nth-of-type(6n+4) { background: rgba(251, 191, 36, 0.22); }
+.article-tags a:nth-of-type(6n+5) { background: rgba(56, 189, 248, 0.22); }
+.article-tags a:nth-of-type(6n+6) { background: rgba(251, 146, 60, 0.22); }
+.article-tags a:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+    border-color: rgba(255,255,255,0.22);
+}
+
+/* 右侧栏标签云 — 多彩淡色 nth-child 配色 + 大圆角 */
 .tags a.tag,
 .categories a.category {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -1320,9 +1348,9 @@ body.immersive-mode #immersive-viewport {
     color: rgba(255,255,255,0.4);
 }
 
-/* ---- 右侧封面（更宽） ---- */
+/* ---- 右侧封面 ---- */
 #music-cover {
-    width: 120px;
+    width: 100px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
