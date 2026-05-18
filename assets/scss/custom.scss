@@ -1134,10 +1134,11 @@ body.immersive-mode #immersive-viewport {
     z-index: 9997;
     display: flex;
     align-items: flex-end;
+    flex-direction: row-reverse;
     gap: 0;
 }
 
-/* ---- 展开/收起按钮（移动端小圆点，桌面端也保留） ---- */
+/* ---- 圆形按钮 ---- */
 #music-toggle {
     width: 48px;
     height: 48px;
@@ -1153,8 +1154,7 @@ body.immersive-mode #immersive-viewport {
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
-    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-    z-index: 1;
+    transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.3s ease;
 }
 #music-toggle:hover {
     background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%);
@@ -1167,17 +1167,23 @@ body.immersive-mode #immersive-viewport {
     box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 12px rgba(129,140,248,0.25), inset 0 1px 0 rgba(255,255,255,0.12);
     border-color: rgba(167,139,250,0.35);
 }
+/* 展开时圆形按钮消失 */
+#music-player.is-expanded #music-toggle {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.6);
+}
 
-/* ---- 卡片面板 ---- */
+/* ---- 卡片面板（液态玻璃） ---- */
 #music-card {
     display: flex;
     align-items: stretch;
-    background: linear-gradient(135deg, rgba(20,20,35,0.65) 0%, rgba(15,15,30,0.55) 100%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%);
     border: 1px solid rgba(255,255,255,0.14);
     border-radius: 18px;
     backdrop-filter: blur(28px) saturate(180%);
     -webkit-backdrop-filter: blur(28px) saturate(180%);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
     overflow: hidden;
     width: 320px;
     max-width: 0;
@@ -1185,14 +1191,15 @@ body.immersive-mode #immersive-viewport {
     pointer-events: none;
     transition: max-width 0.35s cubic-bezier(0.4,0,0.2,1),
                 opacity 0.25s ease,
-                margin-left 0.35s cubic-bezier(0.4,0,0.2,1);
-    margin-left: 0;
+                margin-right 0.35s cubic-bezier(0.4,0,0.2,1);
+    margin-right: 0;
+    cursor: default;
 }
 #music-player.is-expanded #music-card {
     max-width: 340px;
     opacity: 1;
     pointer-events: auto;
-    margin-left: 12px;
+    margin-right: 12px;
 }
 
 /* ---- 左侧信息区 ---- */
@@ -1212,7 +1219,6 @@ body.immersive-mode #immersive-viewport {
     color: rgba(255,255,255,0.92);
     white-space: nowrap;
     overflow: hidden;
-    // [娜酱：下面这行防穿透，marquee 边界剪切]
     mask-image: linear-gradient(to right, #000 85%, transparent 98%);
     -webkit-mask-image: linear-gradient(to right, #000 85%, transparent 98%);
 }
@@ -1223,7 +1229,7 @@ body.immersive-mode #immersive-viewport {
 #music-title.music-marquee-overflow span {
     display: inline-block;
     padding-right: 40px;
-    animation: music-marquee 10s linear infinite;
+    animation: music-marquee 12s linear infinite;
 }
 @keyframes music-marquee {
     0%   { transform: translateX(0); }
@@ -1264,11 +1270,11 @@ body.immersive-mode #immersive-viewport {
 #btn-play {
     width: 40px;
     height: 40px;
-    background: rgba(255,255,255,0.1) !important;
+    background: rgba(255,255,255,0.12) !important;
     border-radius: 50% !important;
 }
 #btn-play:hover {
-    background: rgba(255,255,255,0.18) !important;
+    background: rgba(255,255,255,0.20) !important;
 }
 
 /* ---- 进度条 ---- */
@@ -1335,7 +1341,7 @@ body.immersive-mode #music-player {
     display: none !important;
 }
 
-/* ========== 移动端：默认只显示圆形按钮 ========== */
+/* ========== 移动端 ========== */
 @media (max-width: 767px) {
     #music-player {
         bottom: 20px;

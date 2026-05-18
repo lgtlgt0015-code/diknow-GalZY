@@ -40,34 +40,34 @@
 
 <script>
 (function(){
-  var playlist = {{ $songs | jsonify }};
-  if (!playlist.length) return;
+  // Hugo jsonify 输出 JSON 字符串，用 JSON.parse 转回数组
+  var playlist = JSON.parse({{ $songs | jsonify }});
+  if (!Array.isArray(playlist) || !playlist.length) return;
+
   var idx = 0;
   var audio = document.getElementById('music-audio');
   var player = document.getElementById('music-player');
-  var card = document.getElementById('music-card');
+  var card   = document.getElementById('music-card');
   var toggleBtn = document.getElementById('music-toggle');
-  var titleEl = document.getElementById('music-title').querySelector('span');
-  var artistEl = document.getElementById('music-artist');
-  var coverImg = document.getElementById('music-cover-img');
+  var titleEl   = document.getElementById('music-title').querySelector('span');
+  var artistEl  = document.getElementById('music-artist');
+  var coverImg  = document.getElementById('music-cover-img');
   var coverFallback = document.getElementById('music-cover-fallback');
-  var playBtn = document.getElementById('btn-play');
-  var iconPlay = playBtn.querySelector('.icon-play');
+  var playBtn   = document.getElementById('btn-play');
+  var iconPlay  = playBtn.querySelector('.icon-play');
   var iconPause = playBtn.querySelector('.icon-pause');
   var progressFill = document.getElementById('music-progress-fill');
-  var timeCurrent = document.getElementById('time-current');
+  var timeCurrent  = document.getElementById('time-current');
   var timeDuration = document.getElementById('time-duration');
-  var cardVisible = false;
 
   function load(i) {
     idx = i;
     var s = playlist[i];
     titleEl.textContent = s.title;
     artistEl.textContent = s.artist;
-    // reset marquee
     titleEl.parentElement.classList.remove('music-marquee-overflow');
     titleEl.style.animation = 'none';
-    titleEl.offsetHeight; // reflow
+    void titleEl.offsetWidth;
     if (titleEl.scrollWidth > titleEl.parentElement.clientWidth) {
       titleEl.parentElement.classList.add('music-marquee-overflow');
       titleEl.style.animation = '';
@@ -84,98 +84,104 @@
     audio.load();
   }
 
-  function setPlaying(state) {
-    if (state) {
-      iconPlay.style.display = 'none';
-      iconPause.style.display = '';
-      player.classList.add('is-playing');
-    } else {
-      iconPlay.style.display = '';
-      iconPause.style.display = 'none';
-      player.classList.remove('is-playing');
-    }
+  function setPlaying(on) {
+    iconPlay.style.display  = on ? 'none' : '';
+    iconPause.style.display = on ? '' : 'none';
+    player.classList.toggle('is-playing', on);
   }
 
   function fmtTime(s) {
+    if (!isFinite(s)) return '0:00';
     var m = Math.floor(s / 60);
     var sec = Math.floor(s % 60);
     return m + ':' + (sec < 10 ? '0' : '') + sec;
   }
 
-  function toggleCard() {
-    cardVisible = !cardVisible;
-    if (cardVisible) {
-      player.classList.add('is-expanded');
-      toggleBtn.setAttribute('aria-label','收起播放器');
-    } else {
-      player.classList.remove('is-expanded');
-      toggleBtn.setAttribute('aria-label','展开播放器');
-    }
+  // === 展开/收起逻辑 ===
+  function showCard() {
+    player.classList.add('is-expanded');
+    toggleBtn.setAttribute('aria-label','收起播放器');
+  }
+  function hideCard() {
+    player.classList.remove('is-expanded');
+    toggleBtn.setAttribute('aria-label','展开播放器');
   }
 
-  toggleBtn.addEventListener('click', toggleCard);
-
-  playBtn.addEventListener('click', function(){
-    if (audio.paused) { audio.play(); setPlaying(true); }
-    else { audio.pause(); setPlaying(false); }
+  toggleBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    if (player.classList.contains('is-expanded')) hideCard();
+    else showCard();
   });
 
-  document.getElementById('btn-prev').addEventListener('click', function(){
+  // 点击卡片内部空白区域 → 收起
+  card.addEventListener('click', function(e){
+    if (e.target === card || e.target.id === 'music-info' || e.target.id === 'music-progress' || e.target.id === 'music-progress-bar') {
+      hideCard();
+    }
+  });
+
+  // 点击页面其他地方 → 收起
+  document.addEventListener('click', function(e){
+    if (player.classList.contains('is-expanded') && !player.contains(e.target)) {
+      hideCard();
+    }
+  });
+
+  // === 播放控制 ===
+  playBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    if (audio.paused) { audio.play(); }
+    else { audio.pause(); }
+  });
+
+  document.getElementById('btn-prev').addEventListener('click', function(e){
+    e.stopPropagation();
     idx = (idx - 1 + playlist.length) % playlist.length;
     load(idx);
     audio.play();
-    setPlaying(true);
   });
 
-  document.getElementById('btn-next').addEventListener('click', function(){
+  document.getElementById('btn-next').addEventListener('click', function(e){
+    e.stopPropagation();
     idx = (idx + 1) % playlist.length;
     load(idx);
     audio.play();
-    setPlaying(true);
   });
 
   audio.addEventListener('loadedmetadata', function(){
     timeDuration.textContent = fmtTime(audio.duration);
   });
-
   audio.addEventListener('timeupdate', function(){
-    var pct = audio.duration ? (audio.currentTime / audio.duration * 100) : 0;
+    if (!audio.duration) return;
+    var pct = audio.currentTime / audio.duration * 100;
     progressFill.style.width = pct + '%';
     timeCurrent.textContent = fmtTime(audio.currentTime);
   });
-
   audio.addEventListener('ended', function(){
     idx = (idx + 1) % playlist.length;
     load(idx);
     audio.play();
   });
-
-  audio.addEventListener('play', function(){ setPlaying(true); });
+  audio.addEventListener('play',  function(){ setPlaying(true); });
   audio.addEventListener('pause', function(){ setPlaying(false); });
+  audio.addEventListener('error', function(){
+    console.warn('Music player: failed to load', audio.src);
+    setPlaying(false);
+  });
 
-  // progress bar click
   document.getElementById('music-progress-bar').addEventListener('click', function(e){
+    e.stopPropagation();
     if (!audio.duration) return;
     var rect = this.getBoundingClientRect();
     var pct = (e.clientX - rect.left) / rect.width;
     audio.currentTime = pct * audio.duration;
   });
 
-  // 沉浸模式下隐藏播放器
-  var observer = new MutationObserver(function(mutations){
-    mutations.forEach(function(m){
-      if (m.attributeName === 'class') {
-        if (document.body.classList.contains('immersive-mode')) {
-          player.style.display = 'none';
-        } else {
-          player.style.display = '';
-        }
-      }
-    });
-  });
-  observer.observe(document.body, { attributes: true });
+  // 沉浸模式隐藏
+  new MutationObserver(function(){
+    player.style.display = document.body.classList.contains('immersive-mode') ? 'none' : '';
+  }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-  // 初始加载第一首
   load(0);
 })();
 </script>
