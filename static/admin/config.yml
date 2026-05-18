@@ -27,3 +27,31 @@ collections:
       - {label: "标签", name: "tags", widget: "list", allow_add: true}
       - {label: "描述", name: "description", widget: "string", required: false}
       - {label: "正文", name: "body", widget: "markdown"}
+
+  # ★ 网站设置 — file collection，每一项是侧栏一个独立入口
+  - name: "settings"
+    label: "网站设置"
+    editor:
+      preview: false
+    files:
+      - name: "playlist"
+        label: "🎵 音乐播放列表"
+        file: "data/playlist.json"
+        fields:
+          - name: "songs"
+            label: "歌曲列表"
+            widget: "list"
+            fields:
+              - {label: "歌名", name: "title", widget: "string"}
+              - {label: "歌手", name: "artist", widget: "string"}
+              - {label: "音频文件", name: "file", widget: "file", hint: "上传 mp3 到 /static/audio/"}
+              - {label: "封面图", name: "cover", widget: "image", required: false}
+      - name: "bg_images"
+        label: "🖼 背景图列表"
+        file: "data/bg_images.json"
+        fields:
+          - name: "images"
+            label: "图片列表"
+            widget: "list"
+            fields:
+              - {label: "图片", name: "src", widget: "image"}

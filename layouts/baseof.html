@@ -8,40 +8,7 @@
             localStorage.setItem('StackColorScheme', 'dark');
             document.documentElement.dataset.scheme = 'dark';
         </script>
-        <script>
-            // 背景图轮播 - 每次刷新随机选一张
-            (function() {
-                var bgImages = [
-                    'img/bg/06a5057cb9cd50e62a8bf8db42ad6fc1.jpg',
-                    'img/bg/1a6202babb9ae9241fafd4ec2b7b8f31.jpg',
-                    'img/bg/258461257b2c6c1ea1f6a23e94e26356.jpg',
-                    'img/bg/4b379a9675c794883a2a044d61978b5b.jpg',
-                    'img/bg/6f3ee4c09371c8176a82c947f325a354.jpg',
-                    'img/bg/7cd75dbe4be2fd34355da2c1f619dafb.jpg',
-                    'img/bg/83c18e117d3bfcf9c1d91d4501db8891.jpg',
-                    'img/bg/95228a312d1d8888ed669fb16ee8ecbc.jpg',
-                    'img/bg/9c6cd2b4fe7fbf4004b21ec710d6e0a2.jpg',
-                    'img/bg/a16365435d1a31667421399ffb0c7291.jpg',
-                    'img/bg/ae9ba810177dfde6fd56fc0f50bed7a8.jpg',
-                    'img/bg/dc288b0823c0bd0a0d67c5943df3d67d.jpg',
-                    'img/bg/ddbec10336dd03703d235e1adf1b2c17.jpg',
-                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91Fate-saber.png',
-                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91jk%E5%88%B6%E6%9C%8D-%E4%BA%8C%E6%AC%A1%E5%85%83.png',
-                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E4%B8%AD%E9%87%8E%E6%A2%93-%E4%BA%8C%E6%AC%A1%E5%85%83-%E5%8A%A8%E6%BC%AB.png',
-                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E4%BA%8C%E6%AC%A1%E5%85%83-%E5%8F%AF%E7%88%B1-%E5%A5%B3%E7%94%9F.png',
-                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E4%BA%8C%E6%AC%A1%E5%85%83-%E5%9D%90%E5%A7%BF-%E5%A4%A9%E4%BD%BF.png',
-                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E4%BA%8C%E6%AC%A1%E5%85%83%E5%A5%B3%E5%AD%A9-%E5%88%9D%E9%9F%B3%E6%9C%AA%E6%9D%A5.png',
-                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E5%8A%A8%E6%BC%AB%E5%A5%B3%E5%AD%A9-%E5%9B%B4%E5%B7%BE.png',
-                    'img/bg/%E3%80%90%E5%93%B2%E9%A3%8E%E5%A3%81%E7%BA%B8%E3%80%91%E5%AD%A4%E7%8B%AC%E6%91%87%E6%BB%9A-%E6%B3%A2%E5%A5%87%E9%85%B1.png'
-                ];
-                var idx = Math.floor(Math.random() * bgImages.length);
-                document.addEventListener('DOMContentLoaded', function() {
-                    var style = document.createElement('style');
-                    style.textContent = 'body::before{background-image:url(/' + bgImages[idx] + ')}';
-                    document.head.appendChild(style);
-                });
-            })();
-        </script>
+        {{ partial "bg-loader.html" . }}
     </head>
     <body class="{{ block `body-class` . }}{{ end }}">
         {{- partial "head/colorScheme" . -}}
@@ -354,5 +321,6 @@
                 });
             })();
         </script>
+        {{ partial "music-player.html" . }}
     </body>
 </html>

@@ -1,0 +1,182 @@
+{{/* 音乐播放器 — 数据源 data/playlist.json */}}
+{{- $songs := hugo.Data.playlist.songs -}}
+{{- if $songs -}}
+<div id="music-player" aria-label="音乐播放器">
+  <button id="music-toggle" aria-label="展开播放器" title="音乐">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  </button>
+  <div id="music-card">
+    <div id="music-info">
+      <div id="music-title" class="music-marquee"><span>{{ (index $songs 0).title }}</span></div>
+      <div id="music-artist">{{ (index $songs 0).artist }}</div>
+      <div id="music-controls">
+        <button id="btn-prev" aria-label="上一首" title="上一首">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
+        </button>
+        <button id="btn-play" aria-label="播放" title="播放">
+          <svg class="icon-play" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <svg class="icon-pause" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+        <button id="btn-next" aria-label="下一首" title="下一首">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+        </button>
+      </div>
+      <div id="music-progress">
+        <div id="music-progress-bar"><div id="music-progress-fill"></div></div>
+        <div id="music-time"><span id="time-current">0:00</span><span id="time-duration">0:00</span></div>
+      </div>
+    </div>
+    <div id="music-cover">
+      {{- $cover0 := (index $songs 0).cover -}}
+      {{- if $cover0 -}}
+      <img src="{{ $cover0 | relURL }}" alt="" id="music-cover-img" />
+      {{- else -}}
+      <div id="music-cover-fallback"></div>
+      {{- end -}}
+    </div>
+  </div>
+  <audio id="music-audio" preload="none"></audio>
+</div>
+
+<script>
+(function(){
+  var playlist = {{ $songs | jsonify }};
+  if (!playlist.length) return;
+  var idx = 0;
+  var audio = document.getElementById('music-audio');
+  var player = document.getElementById('music-player');
+  var card = document.getElementById('music-card');
+  var toggleBtn = document.getElementById('music-toggle');
+  var titleEl = document.getElementById('music-title').querySelector('span');
+  var artistEl = document.getElementById('music-artist');
+  var coverImg = document.getElementById('music-cover-img');
+  var coverFallback = document.getElementById('music-cover-fallback');
+  var playBtn = document.getElementById('btn-play');
+  var iconPlay = playBtn.querySelector('.icon-play');
+  var iconPause = playBtn.querySelector('.icon-pause');
+  var progressFill = document.getElementById('music-progress-fill');
+  var timeCurrent = document.getElementById('time-current');
+  var timeDuration = document.getElementById('time-duration');
+  var cardVisible = false;
+
+  function load(i) {
+    idx = i;
+    var s = playlist[i];
+    titleEl.textContent = s.title;
+    artistEl.textContent = s.artist;
+    // reset marquee
+    titleEl.parentElement.classList.remove('music-marquee-overflow');
+    titleEl.style.animation = 'none';
+    titleEl.offsetHeight; // reflow
+    if (titleEl.scrollWidth > titleEl.parentElement.clientWidth) {
+      titleEl.parentElement.classList.add('music-marquee-overflow');
+      titleEl.style.animation = '';
+    }
+    if (s.cover && coverImg) {
+      coverImg.src = s.cover;
+      coverImg.style.display = '';
+      if (coverFallback) coverFallback.style.display = 'none';
+    } else {
+      if (coverImg) coverImg.style.display = 'none';
+      if (coverFallback) coverFallback.style.display = '';
+    }
+    audio.src = s.file;
+    audio.load();
+  }
+
+  function setPlaying(state) {
+    if (state) {
+      iconPlay.style.display = 'none';
+      iconPause.style.display = '';
+      player.classList.add('is-playing');
+    } else {
+      iconPlay.style.display = '';
+      iconPause.style.display = 'none';
+      player.classList.remove('is-playing');
+    }
+  }
+
+  function fmtTime(s) {
+    var m = Math.floor(s / 60);
+    var sec = Math.floor(s % 60);
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  function toggleCard() {
+    cardVisible = !cardVisible;
+    if (cardVisible) {
+      player.classList.add('is-expanded');
+      toggleBtn.setAttribute('aria-label','收起播放器');
+    } else {
+      player.classList.remove('is-expanded');
+      toggleBtn.setAttribute('aria-label','展开播放器');
+    }
+  }
+
+  toggleBtn.addEventListener('click', toggleCard);
+
+  playBtn.addEventListener('click', function(){
+    if (audio.paused) { audio.play(); setPlaying(true); }
+    else { audio.pause(); setPlaying(false); }
+  });
+
+  document.getElementById('btn-prev').addEventListener('click', function(){
+    idx = (idx - 1 + playlist.length) % playlist.length;
+    load(idx);
+    audio.play();
+    setPlaying(true);
+  });
+
+  document.getElementById('btn-next').addEventListener('click', function(){
+    idx = (idx + 1) % playlist.length;
+    load(idx);
+    audio.play();
+    setPlaying(true);
+  });
+
+  audio.addEventListener('loadedmetadata', function(){
+    timeDuration.textContent = fmtTime(audio.duration);
+  });
+
+  audio.addEventListener('timeupdate', function(){
+    var pct = audio.duration ? (audio.currentTime / audio.duration * 100) : 0;
+    progressFill.style.width = pct + '%';
+    timeCurrent.textContent = fmtTime(audio.currentTime);
+  });
+
+  audio.addEventListener('ended', function(){
+    idx = (idx + 1) % playlist.length;
+    load(idx);
+    audio.play();
+  });
+
+  audio.addEventListener('play', function(){ setPlaying(true); });
+  audio.addEventListener('pause', function(){ setPlaying(false); });
+
+  // progress bar click
+  document.getElementById('music-progress-bar').addEventListener('click', function(e){
+    if (!audio.duration) return;
+    var rect = this.getBoundingClientRect();
+    var pct = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = pct * audio.duration;
+  });
+
+  // 沉浸模式下隐藏播放器
+  var observer = new MutationObserver(function(mutations){
+    mutations.forEach(function(m){
+      if (m.attributeName === 'class') {
+        if (document.body.classList.contains('immersive-mode')) {
+          player.style.display = 'none';
+        } else {
+          player.style.display = '';
+        }
+      }
+    });
+  });
+  observer.observe(document.body, { attributes: true });
+
+  // 初始加载第一首
+  load(0);
+})();
+</script>
+{{- end -}}

@@ -1,0 +1,21 @@
+{{/* 背景图轮播 — 数据源 data/bg_images.json */}}
+{{- $images := hugo.Data.bg_images.images -}}
+{{- if $images -}}
+<script>
+  (function() {
+    var bgImages = [
+      {{- range $images }}
+      {{ .src | jsonify }},
+      {{- end }}
+    ];
+    var idx = Math.floor(Math.random() * bgImages.length);
+    document.addEventListener('DOMContentLoaded', function() {
+      var style = document.createElement('style');
+      style.textContent = 'body::before{background-image:url(' + bgImages[idx] + ')}';
+      document.head.appendChild(style);
+    });
+  })();
+</script>
+{{- else -}}
+{{- warnf "data/bg_images.json is empty or missing" -}}
+{{- end -}}
