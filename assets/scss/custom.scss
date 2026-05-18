@@ -490,7 +490,7 @@ a.title:hover {
 .article-tags a {
     display: inline-block;
     padding: 6px 16px;
-    margin: 3px;
+    margin: 1px;
     border-radius: 20px;
     font-size: 1.35rem;
     font-weight: 500;
@@ -1283,7 +1283,7 @@ body.immersive-mode #immersive-viewport {
 
 /* ---- 中间：歌曲信息 ---- */
 #music-info {
-    padding: 12px 8px 10px 14px;
+    padding: 12px 12px 10px 14px;
     display: flex;
     flex-direction: column;
     justify-content: center;
