@@ -115,9 +115,8 @@
 
   // 点击卡片内部空白区域 → 收起
   card.addEventListener('click', function(e){
-    if (e.target === card || e.target.id === 'music-info' || e.target.id === 'music-progress' || e.target.id === 'music-progress-bar') {
-      hideCard();
-    }
+    // 点任何地方都收起，除非点的是按钮
+    if (!e.target.closest('button')) hideCard();
   });
 
   // 点击页面其他地方 → 收起
