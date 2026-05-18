@@ -138,7 +138,6 @@ main.main,
 .hamburger {
     opacity: 1;
     pointer-events: auto;
-    will-change: transform, opacity;
     transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
                 transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -160,7 +159,6 @@ body.immersive-mode .left-sidebar {
     opacity: 0;
     pointer-events: none;
     transform: translateX(-40px);
-    will-change: transform, opacity;
     transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
                 transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -169,7 +167,6 @@ body.immersive-mode .right-sidebar {
     opacity: 0;
     pointer-events: none;
     transform: translateX(40px);
-    will-change: transform, opacity;
     transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
                 transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -178,7 +175,6 @@ body.immersive-mode main.main {
     opacity: 0;
     pointer-events: none;
     transform: scale(0.95);
-    will-change: transform, opacity;
     transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
                 transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -188,14 +184,6 @@ body.immersive-mode .hamburger {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 沉浸模式切换时防止 backdrop-filter 闪烁 —— 强制 GPU 预合成 */
-.left-sidebar,
-.right-sidebar,
-main.main {
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
 }
 
 /* 沉浸模式按钮优雅动画 */
