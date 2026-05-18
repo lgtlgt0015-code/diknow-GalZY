@@ -1,10 +1,4 @@
-/* 全面屏手机底部导航条/安全区适配：消除黑边 */
-html {
-    background: #0d0d12;
-}
 body {
-    background: #0d0d12;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
     &::before {
         content: "";
         position: fixed;
@@ -406,28 +400,6 @@ body.immersive-mode #immersive-btn {
         0 4px 12px rgba(0, 0, 0, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-/* QQ 纯文本展示（不可点击，但保持和图标一致的玻璃卡片样式） */
-.menu-social li .social-text {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.1) 0%,
-        rgba(255, 255, 255, 0.03) 100%
-    );
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(12px) saturate(150%);
-    -webkit-backdrop-filter: blur(12px) saturate(150%);
-    box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    cursor: default;
 }
 
 .menu-social li a:hover {
@@ -1378,32 +1350,21 @@ body.immersive-mode #music-player {
 /* ========== 移动端 ========== */
 @media (max-width: 767px) {
     #music-player {
-        bottom: 12px;
-        right: 8px;
+        bottom: 20px;
+        right: 14px;
     }
     #music-card {
-        width: calc(100vw - 16px);
+        width: 280px;
     }
     #music-player.is-expanded #music-card {
-        max-width: calc(100vw - 16px);
+        max-width: 290px;
     }
     #music-cover {
-        width: 56px;
+        width: 72px;
     }
     #music-info {
-        padding: 6px 0 6px 10px;
+        padding: 10px 0 8px 12px;
     }
-    #music-title { font-size: 1.1rem; }
-    #music-artist { font-size: 0.95rem; }
-    #btn-play {
-        width: 36px;
-        height: 36px;
-    }
-    #music-progress {
-        margin-top: 6px;
-    }
-    .social-text {
-        width: 38px;
-        height: 38px;
-    }
+    #music-title { font-size: 1.2rem; }
+    #music-artist { font-size: 1.05rem; }
 }
