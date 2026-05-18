@@ -94,108 +94,225 @@
                     }
                 }
 
-                // ===== 沉浸模式 - 完全重写 =====
-                // 原理：创建视口大小 div，背景 contain 铺满，
-                // transform scale 真正缩放图片，translate 拖动平移
-                var panel = null;
-                var st = { x: 0, y: 0, scale: 1, vx: 0, vy: 0, ts: 1 };
-                var dr = { on: false, lx: 0, ly: 0, lt: 0 };
-                var loop = null;
+                // ===== 沉浸模式 v3 - viewport + canvas 可缩放看全图 =====
+                // canvas 尺寸 = cover 后真实几何（JS 算出），zoom=1 时视觉等于原 cover
+                // zoom<1 时能看到原本被 cover 裁掉的左右/上下区域
+                var viewport = null, canvas = null;
+                var zoom = 1, panX = 0, panY = 0;
+                var canvasW = 0, canvasH = 0;
+                var dragging = false, dragLastX = 0, dragLastY = 0;
+                var wheelHandler, pointerDownHandler, pointerMoveHandler, pointerUpHandler;
+
+                function setImmersiveImage(url) {
+                    var probe = new Image();
+                    probe.onload = function() {
+                        var vw = window.innerWidth, vh = window.innerHeight;
+                        var coverScale = Math.max(vw / probe.naturalWidth, vh / probe.naturalHeight);
+                        canvasW = probe.naturalWidth * coverScale;
+                        canvasH = probe.naturalHeight * coverScale;
+                        if (viewport) {
+                            viewport.style.setProperty('--canvas-w', canvasW + 'px');
+                            viewport.style.setProperty('--canvas-h', canvasH + 'px');
+                        }
+                        if (canvas) canvas.src = url;
+                        resetTransform();
+                    };
+                    probe.onerror = function() {
+                        canvasW = window.innerWidth;
+                        canvasH = window.innerHeight;
+                        if (viewport) {
+                            viewport.style.setProperty('--canvas-w', canvasW + 'px');
+                            viewport.style.setProperty('--canvas-h', canvasH + 'px');
+                        }
+                        if (canvas) canvas.src = url;
+                        resetTransform();
+                    };
+                    probe.src = url;
+                }
+
+                function resetTransform() { zoom = 1; panX = 0; panY = 0; applyTransform(); }
+
+                function applyTransform() {
+                    var vw = window.innerWidth, vh = window.innerHeight;
+                    var maxPanX = Math.max(0, (canvasW * zoom - vw) / 2);
+                    var maxPanY = Math.max(0, (canvasH * zoom - vh) / 2);
+                    panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
+                    panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
+                    if (canvas) {
+                        // 直接写 transform 字符串，跳过 CSS 变量解析，移动端高频更新跟手
+                        canvas.style.transform =
+                            'translate(-50%,-50%) translate(' + panX + 'px,' + panY + 'px) scale(' + zoom + ')';
+                    }
+                }
 
                 function enterImmersive() {
                     var cs = getComputedStyle(document.body, '::before');
                     var m = cs.backgroundImage.match(/url\(["']?(.*?)["']?\)/);
                     if (!m) return;
 
-                    panel = document.createElement('div');
-                    panel.id = 'immersive-panel';
-                    panel.style.cssText =
-                        'position:fixed;z-index:9999;pointer-events:auto;cursor:grab;' +
-                        'width:100vw;height:100vh;top:0;left:0;' +
-                        'background-image:' + cs.backgroundImage + ';' +
-                        'background-size:contain;background-position:center;background-repeat:no-repeat;' +
-                        'opacity:0;transition:opacity 0.6s ease;will-change:transform;';
-                    document.body.appendChild(panel);
+                    viewport = document.createElement('div');
+                    viewport.id = 'immersive-viewport';
+                    viewport.setAttribute('aria-hidden', 'true');
+                    // 行内强制 opacity:0，覆盖 body.immersive-mode 已经匹配上的 opacity:1
+                    viewport.style.opacity = '0';
+                    viewport.innerHTML = '<img id="immersive-canvas" alt="" draggable="false" />';
+                    document.body.appendChild(viewport);
+                    canvas = document.getElementById('immersive-canvas');
+
                     var h = document.getElementById('imm-hide');
                     if (!h) { h = document.createElement('style'); h.id = 'imm-hide'; document.head.appendChild(h); }
                     h.textContent = 'body.immersive-mode::before{opacity:0!important}';
-                    requestAnimationFrame(function() { panel.style.opacity = '1'; });
-                    st.x = 0; st.y = 0; st.scale = 1; st.ts = 1; st.vx = 0; st.vy = 0;
+
+                    setImmersiveImage(m[1]);
+
+                    // 双 rAF：第一帧 commit opacity:0，第二帧切 1，transition 才会插值
+                    requestAnimationFrame(function() {
+                        requestAnimationFrame(function() {
+                            if (viewport) viewport.style.opacity = '1';
+                        });
+                    });
+
+                    attachImmersiveEvents();
                 }
 
                 function exitImmersive() {
-                    if (!panel) return;
-                    panel.style.opacity = '0';
-                    var p = panel;
-                    setTimeout(function() {
-                        p.remove();
-                        var h = document.getElementById('imm-hide');
-                        if (h) h.remove();
-                    }, 600);
-                    panel = null;
-                    st.x = 0; st.y = 0; st.scale = 1; st.ts = 1; st.vx = 0; st.vy = 0;
-                    if (loop) { cancelAnimationFrame(loop); loop = null; }
+                    detachImmersiveEvents();
+                    if (viewport) {
+                        viewport.style.opacity = '0';
+                        var v = viewport;
+                        setTimeout(function() {
+                            if (v && v.parentNode) v.parentNode.removeChild(v);
+                            var h = document.getElementById('imm-hide');
+                            if (h) h.remove();
+                        }, 700);
+                        viewport = null;
+                        canvas = null;
+                    }
+                    zoom = 1; panX = 0; panY = 0;
                 }
 
-                function tick() {
-                    var ds = st.ts - st.scale;
-                    if (Math.abs(ds) > 0.001) st.scale += ds * 0.12;
-                    else st.scale = st.ts;
+                function attachImmersiveEvents() {
+                    if (!viewport) return;
+                    var activePointers = new Map();
+                    var pinchStart = null;
 
-                    if (!dr.on) {
-                        st.x += st.vx;
-                        st.y += st.vy;
-                        st.vx *= 0.95;
-                        st.vy *= 0.95;
-                        if (Math.abs(st.vx) < 0.05) st.vx = 0;
-                        if (Math.abs(st.vy) < 0.05) st.vy = 0;
+                    function snapshot() { return Array.from(activePointers.values()); }
+
+                    function flashAnimating() {
+                        if (!canvas) return;
+                        canvas.classList.add('is-animating');
+                        clearTimeout(canvas._animTimer);
+                        canvas._animTimer = setTimeout(function() {
+                            if (canvas) canvas.classList.remove('is-animating');
+                        }, 200);
                     }
 
-                    if (panel) {
-                        panel.style.transform = 'translate(' + st.x + 'px,' + st.y + 'px) scale(' + st.scale + ')';
-                    }
+                    wheelHandler = function(e) {
+                        e.preventDefault();
+                        if (!canvas) return;
+                        flashAnimating();
+                        var rect = viewport.getBoundingClientRect();
+                        var cx = e.clientX - rect.left - rect.width / 2;
+                        var cy = e.clientY - rect.top - rect.height / 2;
+                        var delta = -e.deltaY * 0.0015;
+                        var newZoom = Math.max(0.2, Math.min(4, zoom * (1 + delta)));
+                        var k = newZoom / zoom;
+                        panX = (panX - cx) * k + cx;
+                        panY = (panY - cy) * k + cy;
+                        zoom = newZoom;
+                        applyTransform();
+                    };
+                    viewport.addEventListener('wheel', wheelHandler, { passive: false });
 
-                    var busy = Math.abs(st.vx) > 0.05 || Math.abs(st.vy) > 0.05 || Math.abs(ds) > 0.001 || dr.on;
-                    if (busy) loop = requestAnimationFrame(tick);
-                    else loop = null;
+                    pointerDownHandler = function(e) {
+                        if (e.target && e.target.closest && e.target.closest('#immersive-btn')) return;
+                        e.preventDefault();
+                        try { viewport.setPointerCapture(e.pointerId); } catch (_) {}
+                        activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+                        // 触摸/拖动期间强制无过渡
+                        if (canvas) canvas.classList.remove('is-animating');
+
+                        if (activePointers.size === 1) {
+                            dragging = true;
+                            dragLastX = e.clientX;
+                            dragLastY = e.clientY;
+                        } else if (activePointers.size === 2) {
+                            dragging = false;
+                            var p = snapshot();
+                            pinchStart = {
+                                dist: Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y),
+                                zoom: zoom, panX: panX, panY: panY,
+                                cx: (p[0].x + p[1].x) / 2,
+                                cy: (p[0].y + p[1].y) / 2
+                            };
+                        }
+                    };
+
+                    pointerMoveHandler = function(e) {
+                        if (!activePointers.has(e.pointerId)) return;
+                        activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+                        if (pinchStart && activePointers.size >= 2) {
+                            // 双指捏合：以两指中点为锚点缩放
+                            var p = snapshot();
+                            var newDist = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
+                            var newZoom = Math.max(0.2, Math.min(4, pinchStart.zoom * newDist / pinchStart.dist));
+                            var rect = viewport.getBoundingClientRect();
+                            var ax = pinchStart.cx - rect.left - rect.width / 2;
+                            var ay = pinchStart.cy - rect.top - rect.height / 2;
+                            var k = newZoom / pinchStart.zoom;
+                            panX = (pinchStart.panX - ax) * k + ax;
+                            panY = (pinchStart.panY - ay) * k + ay;
+                            zoom = newZoom;
+                            applyTransform();
+                        } else if (dragging && activePointers.size === 1) {
+                            panX += e.clientX - dragLastX;
+                            panY += e.clientY - dragLastY;
+                            dragLastX = e.clientX;
+                            dragLastY = e.clientY;
+                            applyTransform();
+                        }
+                    };
+
+                    pointerUpHandler = function(e) {
+                        activePointers.delete(e.pointerId);
+                        if (activePointers.size < 2) pinchStart = null;
+                        if (activePointers.size === 0) dragging = false;
+                    };
+
+                    viewport.addEventListener('pointerdown', pointerDownHandler);
+                    viewport.addEventListener('pointermove', pointerMoveHandler);
+                    viewport.addEventListener('pointerup', pointerUpHandler);
+                    viewport.addEventListener('pointercancel', pointerUpHandler);
                 }
 
-                function ensureLoop() { if (!loop) loop = requestAnimationFrame(tick); }
-
-                document.addEventListener('mousedown', function(e) {
-                    if (!isImmersive || !panel) return;
-                    if (e.target.closest('#immersive-btn')) return;
-                    dr.on = true; dr.lx = e.clientX; dr.ly = e.clientY; dr.lt = performance.now();
-                    st.vx = 0; st.vy = 0;
-                    panel.style.cursor = 'grabbing';
-                    e.preventDefault();
-                    ensureLoop();
-                });
-
-                document.addEventListener('mousemove', function(e) {
-                    if (!dr.on) return;
-                    var now = performance.now(), dt = now - dr.lt;
-                    var dx = e.clientX - dr.lx, dy = e.clientY - dr.ly;
-                    if (dt > 0) {
-                        st.vx = st.vx * 0.4 + (dx / dt * 16) * 0.6;
-                        st.vy = st.vy * 0.4 + (dy / dt * 16) * 0.6;
+                function detachImmersiveEvents() {
+                    if (!viewport) return;
+                    if (wheelHandler) viewport.removeEventListener('wheel', wheelHandler);
+                    if (pointerDownHandler) viewport.removeEventListener('pointerdown', pointerDownHandler);
+                    if (pointerMoveHandler) viewport.removeEventListener('pointermove', pointerMoveHandler);
+                    if (pointerUpHandler) {
+                        viewport.removeEventListener('pointerup', pointerUpHandler);
+                        viewport.removeEventListener('pointercancel', pointerUpHandler);
                     }
-                    st.x += dx; st.y += dy;
-                    dr.lx = e.clientX; dr.ly = e.clientY; dr.lt = now;
-                });
+                }
 
-                document.addEventListener('mouseup', function() {
-                    if (dr.on && panel) panel.style.cursor = 'grab';
-                    dr.on = false;
-                    st.vx *= 1.8; st.vy *= 1.8;
+                window.addEventListener('resize', function() {
+                    if (!canvas || !canvas.src) return;
+                    var img = new Image();
+                    img.onload = function() {
+                        var vw = window.innerWidth, vh = window.innerHeight;
+                        var coverScale = Math.max(vw / img.naturalWidth, vh / img.naturalHeight);
+                        canvasW = img.naturalWidth * coverScale;
+                        canvasH = img.naturalHeight * coverScale;
+                        if (viewport) {
+                            viewport.style.setProperty('--canvas-w', canvasW + 'px');
+                            viewport.style.setProperty('--canvas-h', canvasH + 'px');
+                        }
+                        applyTransform();
+                    };
+                    img.src = canvas.src;
                 });
-
-                document.addEventListener('wheel', function(e) {
-                    if (!isImmersive || !panel) return;
-                    e.preventDefault();
-                    st.ts = Math.max(0.1, Math.min(5, st.ts + (e.deltaY > 0 ? -0.2 : 0.2)));
-                    ensureLoop();
-                }, { passive: false });
 
                 btn.addEventListener('click', function() {
                     isImmersive = !isImmersive;

@@ -971,3 +971,49 @@ body.template-search .search-form.mobile-search {
         stroke-width: 1.5;
     }
 }
+
+/* ========== 沉浸模式 v3 - viewport + canvas 可缩放看全图 ==========
+   canvas 几何由 JS 算成 cover 后真实尺寸，写入 --canvas-w/--canvas-h
+   transform 用 JS 直接拼字符串（不走 CSS 变量），移动端高频更新跟手 */
+#immersive-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: 9998;
+    opacity: 0;
+    pointer-events: none;
+    background: #000;
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    /* 三件套：彻底交出手势控制权给 JS */
+    touch-action: none;
+    overscroll-behavior: contain;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body.immersive-mode #immersive-viewport {
+    pointer-events: auto;
+}
+
+#immersive-canvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--canvas-w, 100vw);
+    height: var(--canvas-h, 100dvh);
+    /* 默认无 transition！否则拖动时每次 transform 变更都要插值 → 一段一段 */
+    transition: none;
+    transform-origin: center center;
+    transform: translate(-50%, -50%);
+    will-change: transform;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    /* 让拖动事件穿透到 viewport，img 本身不接事件 */
+    pointer-events: none;
+}
+
+/* 仅滚轮缩放时短暂启用，让锚点缩放过渡顺滑 */
+#immersive-canvas.is-animating {
+    transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
