@@ -119,7 +119,7 @@ body.immersive-mode::before {
 /* 沉浸模式 - 隐藏所有UI */
 body.immersive-mode {
     overflow: hidden !important;
-    height: 100vh !important;
+    height: 100dvh !important;
 }
 
 body.immersive-mode .container {
