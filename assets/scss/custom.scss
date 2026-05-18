@@ -1,3 +1,11 @@
+/* 全局：去 iOS/Chrome 点击蓝闪 + 触屏无 hover 残留 */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
 body {
     padding-bottom: env(safe-area-inset-bottom, 0px);
     &::before {
@@ -1222,6 +1230,7 @@ body.immersive-mode #immersive-viewport {
     box-shadow: 0 8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
     overflow: hidden;
     max-width: 0;
+    min-width: 0;
     opacity: 0;
     pointer-events: none;
     transition: max-width 0.35s cubic-bezier(0.4,0,0.2,1),
@@ -1232,6 +1241,7 @@ body.immersive-mode #immersive-viewport {
 }
 #music-player.is-expanded #music-card {
     max-width: 400px;
+    min-width: 400px;
     opacity: 1;
     pointer-events: auto;
     margin-right: 10px;
@@ -1424,4 +1434,32 @@ body.immersive-mode #music-player {
     #music-title { font-size: 1.15rem; }
     #music-artist { font-size: 1rem; margin: 1px 0 6px; }
     #music-progress { margin-top: 4px; }
+}
+
+/* ========== 触屏设备：禁用 UI chrome 的 hover 位移动画 ==========
+   保留：文章卡片（.article-list article）、沉浸按钮、音乐播放器按钮 */
+@media (hover: none) and (pointer: coarse) {
+    .menu > li > a:hover,
+    #theme-pill-btn:hover,
+    .menu-social li a:hover,
+    .right-sidebar a:hover,
+    .right-sidebar .widget-archive--list a:hover,
+    .right-sidebar .archives-year a:hover,
+    .right-sidebar .category-list a:hover,
+    .right-sidebar .tagCloud-tags a:hover,
+    .tags a.tag:hover,
+    .categories a.category:hover,
+    .article-tags a:hover,
+    .site-avatar:hover img,
+    .widget-card:hover {
+        transform: none !important;
+    }
+    .menu > li > a:hover::before,
+    #theme-pill-btn:hover::before {
+        transform: translateY(-50%) scaleX(0) !important;
+    }
+    .menu > li > a:hover svg,
+    #theme-pill-btn:hover svg {
+        transform: none !important;
+    }
 }
