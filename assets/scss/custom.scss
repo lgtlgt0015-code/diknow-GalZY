@@ -2,11 +2,13 @@ body {
     &::before {
         content: "";
         position: fixed;
-        inset: 0;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        background-attachment: fixed;
         opacity: 0.4;
         z-index: -1;
         pointer-events: none;
@@ -120,7 +122,7 @@ body.immersive-mode::before {
 /* 沉浸模式 - 隐藏所有UI */
 body.immersive-mode {
     overflow: hidden !important;
-    height: 100vh !important;
+    height: 100dvh !important;
 }
 
 body.immersive-mode .container {
