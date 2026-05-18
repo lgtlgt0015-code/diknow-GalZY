@@ -42,6 +42,7 @@
     
     let searchData = [];
     let dataLoaded = false;
+    let pendingKeyword = null;  // 数据未完成时暂存关键词
     
     // 加载搜索数据
     fetch(jsonUrl)
@@ -50,6 +51,12 @@
             searchData = items || [];
             dataLoaded = true;
             console.log('Search data loaded:', searchData.length, 'items');
+            // 数据就绪后，如果之前有暂存的关键词，补跑搜索
+            if (pendingKeyword) {
+                var kw = pendingKeyword;
+                pendingKeyword = null;
+                doSearch(kw);
+            }
         })
         .catch(e => {
             console.error('Search: Failed to load data', e);
@@ -143,12 +150,16 @@
         doSearch(input.value); 
     });
     
-    // 如果有初始关键词，执行搜索
+    // 如果有初始关键词，执行搜索（若数据未就绪则暂存，待 fetch 完成后补跑）
     const urlParams = new URLSearchParams(window.location.search);
     const initialKeyword = urlParams.get('keyword');
     if (initialKeyword) {
         input.value = initialKeyword;
-        doSearch(initialKeyword);
+        if (dataLoaded) {
+            doSearch(initialKeyword);
+        } else {
+            pendingKeyword = initialKeyword;
+        }
     }
 })();
 </script>

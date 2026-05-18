@@ -810,13 +810,45 @@ button:not(#immersive-btn):not(.hamburger):not([type="submit"]):hover {
     outline: none !important;
 }
 
-/* 搜索页主表单 placeholder 也要可见 */
+/* ========== 搜索页主表单 液态玻璃化（桌面/移动端的 /search/ 页面）========== */
+.main .search-form input {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.02) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(16px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(150%) !important;
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 .main .search-form input::placeholder,
 .main .search-form input::-webkit-input-placeholder,
 .main .search-form input::-moz-placeholder,
 .main .search-form input:-ms-input-placeholder {
     color: rgba(255, 255, 255, 0.65) !important;
     opacity: 1 !important;
+}
+.main .search-form input:focus {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.04) 100%
+    ) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    box-shadow:
+        0 8px 28px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+    outline: none !important;
+}
+
+/* 搜索页隐藏左侧栏的移动搜索框，避免重复 */
+body.template-search .search-form.mobile-search {
+    display: none !important;
 }
 
 /* ========== 头像 emoji 黑底修复 ==========
