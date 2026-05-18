@@ -879,9 +879,10 @@ body.template-search .search-form.mobile-search {
         -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
         border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 16px;
+        /* 常驻 overflow:hidden 防止 slideDown 动画加减 overflow 时 BFC 变化触发宽度重算 */
+        overflow: hidden;
     }
-    /* slideDown 动画期间 overflow:hidden + border-radius 会裁剪内容导致宽度闪烁，
-       利用 menu.js 在动画中加的 .transiting 类临时关掉圆角 */
+    /* slideDown 动画中 overflow:hidden 已经常驻，仅需临时去圆角防裁剪 */
     #main-menu.transiting {
         border-radius: 0 !important;
     }
