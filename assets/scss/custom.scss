@@ -1,4 +1,8 @@
+html {
+    background: #0d0d12;
+}
 body {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     &::before {
         content: "";
         position: fixed;
@@ -1347,24 +1351,69 @@ body.immersive-mode #music-player {
     display: none !important;
 }
 
-/* ========== 移动端 ========== */
+/* ========== 移动端：卡片从底部弹上，左右留等宽缝隙 ========== */
 @media (max-width: 767px) {
     #music-player {
-        bottom: 20px;
-        right: 14px;
+        bottom: auto;
+        right: auto;
+        position: fixed;
+        inset: auto;
+        /* 展开态：卡片固定铺满底部 */
+        display: block;
     }
+    /* 圆形按钮 — 始终右下角 */
+    #music-toggle {
+        position: fixed;
+        bottom: 12px;
+        right: 12px;
+        z-index: 9998;
+    }
+    /* 展开时圆形按钮消失 */
+    #music-player.is-expanded #music-toggle {
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.4);
+        transition: opacity 0.2s ease, transform 0.25s ease;
+    }
+    /* 卡片 — 从底部弹出，左右下留 8px 缝隙 */
     #music-card {
-        width: 280px;
+        position: fixed;
+        left: 8px;
+        right: 8px;
+        bottom: 12px;
+        width: auto;
+        max-width: none;
+        border-radius: 16px;
+        flex-direction: row;
+        /* 收起态：藏到屏幕下方 */
+        transform: translateY(calc(100% + 20px));
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                    opacity 0.3s ease;
     }
     #music-player.is-expanded #music-card {
-        max-width: 290px;
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+        max-width: none;
+        margin-right: 0;
     }
+    /* 封面 56px */
     #music-cover {
-        width: 72px;
+        width: 56px;
     }
+    /* 信息区紧凑 */
     #music-info {
-        padding: 10px 0 8px 12px;
+        padding: 8px 0 8px 12px;
     }
-    #music-title { font-size: 1.2rem; }
-    #music-artist { font-size: 1.05rem; }
+    #music-title { font-size: 1.1rem; }
+    #music-artist { font-size: 0.95rem; margin: 1px 0 6px; }
+    #btn-play {
+        width: 34px;
+        height: 34px;
+    }
+    #music-progress {
+        margin-top: 6px;
+    }
 }

@@ -48,8 +48,8 @@
 
 [[social]]
     identifier = "qq"
-    name       = "QQ: 3402851762"
-    url        = "https://wpa.qq.com/msgrd?v=3&uin=3402851762&site=qq&menu=yes"
+    name       = "QQ"
+    url        = "/contact/qq/"
     weight     = 3
     [social.params]
         icon = "qq"

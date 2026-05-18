@@ -40,7 +40,16 @@
   var playlist = JSON.parse({{ $songs | jsonify }});
   if (!Array.isArray(playlist) || !playlist.length) return;
 
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+  }
+  var order = playlist.map(function(_, i){ return i; });
+  shuffle(order);
   var idx = 0;
+
   var audio = document.getElementById('music-audio');
   var player = document.getElementById('music-player');
   var card   = document.getElementById('music-card');
@@ -58,7 +67,7 @@
 
   function load(i) {
     idx = i;
-    var s = playlist[i];
+    var s = playlist[order[i]];
     titleEl.textContent = s.title;
     artistEl.textContent = s.artist;
     titleEl.parentElement.classList.remove('music-marquee-overflow');
@@ -133,14 +142,14 @@
 
   document.getElementById('btn-prev').addEventListener('click', function(e){
     e.stopPropagation();
-    idx = (idx - 1 + playlist.length) % playlist.length;
+    idx = (idx - 1 + order.length) % order.length;
     load(idx);
     audio.play();
   });
 
   document.getElementById('btn-next').addEventListener('click', function(e){
     e.stopPropagation();
-    idx = (idx + 1) % playlist.length;
+    idx = (idx + 1) % order.length;
     load(idx);
     audio.play();
   });
@@ -155,7 +164,8 @@
     timeCurrent.textContent = fmtTime(audio.currentTime);
   });
   audio.addEventListener('ended', function(){
-    idx = (idx + 1) % playlist.length;
+    idx++;
+    if (idx >= order.length) { shuffle(order); idx = 0; }
     load(idx);
     audio.play();
   });
